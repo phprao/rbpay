@@ -27,7 +27,7 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 			<div class="col-xs-12 col-lg-4">
 				<div class="panel panel-default">
 					<div class="panel-heading">
-						<h3 class="panel-title" id="title">管理员信息</h3>
+						<h3 class="panel-title" id="title">代理信息</h3>
 					</div>
 					<ul class="list-group text-center">
 						<li class="list-group-item">
