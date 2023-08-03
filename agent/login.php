@@ -19,24 +19,20 @@ if (isset($_POST['user']) && isset($_POST['pass'])) {
   } elseif ($_SESSION['pass_error'] > 5) {
     @header('Content-Type: text/html; charset=UTF-8');
     exit("<script language='javascript'>alert('用户名或密码不正确！');history.go(-1);</script>");
-  } elseif ($user == $conf['admin_user'] && $pass == $conf['admin_pwd']) { // 主账号登录
+  } elseif (!empty($user) && !empty($pass)) {
     $city = '';
-    $DB->exec("insert into `pre_log` (`uid`,`type`,`date`,`ip`,`city`) values (0,'登录后台','" . $date . "','" . $clientip . "','" . $city . "')");
-    $session = md5($user . $pass . $password_hash);
-    $expiretime = time() + 604800;
-    $token = authcode("{$user}\t{$session}\t{$expiretime}", 'ENCODE', SYS_KEY);
-    setcookie("admin_token", $token, time() + 604800);
-    @header('Content-Type: text/html; charset=UTF-8');
-    exit("<script language='javascript'>alert('登陆管理中心成功！');window.location.href='./';</script>");
-  } elseif ($user == $conf['son_user'] && $pass == $conf['son_pwd']) { // 子账号登录
-    $city = '';
-    $DB->exec("insert into `pre_log` (`uid`,`type`,`date`,`ip`,`city`) values (0,'登录后台','" . $date . "','" . $clientip . "','" . $city . "')");
-    $session = md5($user . $pass . $password_hash);
-    $expiretime = time() + 604800;
-    $token = authcode("{$user}\t{$session}\t{$expiretime}", 'ENCODE', SYS_KEY);
-    setcookie("admin_token", $token, time() + 604800);
-    @header('Content-Type: text/html; charset=UTF-8');
-    exit("<script language='javascript'>alert('登陆管理中心成功！');window.location.href='./';</script>");
+    $md5pass = md5($pass);
+    $agentrow = $DB->getRow("SELECT * FROM pre_agent WHERE agent_user='{$user}' and agent_pass='{$md5pass}' limit 1");
+    if (empty($agentrow)) {
+      exit("<script language='javascript'>alert('用户名或密码不正确！');history.go(-1);</script>");
+    } else {
+      $session = md5($agentrow['id'] . $password_hash);
+      $expiretime = time() + 604800;
+      $token = authcode("{$agentrow['id']}\t{$session}\t{$expiretime}", 'ENCODE', SYS_KEY);
+      setcookie("agent_token", $token, time() + 604800);
+      @header('Content-Type: text/html; charset=UTF-8');
+      exit("<script language='javascript'>alert('登陆代理后台成功！');window.location.href='./';</script>");
+    }
   } else {
     $_SESSION['pass_error']++;
     @header('Content-Type: text/html; charset=UTF-8');
@@ -44,13 +40,13 @@ if (isset($_POST['user']) && isset($_POST['pass'])) {
   }
 } elseif (isset($_GET['logout'])) {
   if (!checkRefererHost()) exit();
-  setcookie("admin_token", "", time() - 604800);
+  setcookie("agent_token", "", time() - 604800);
   @header('Content-Type: text/html; charset=UTF-8');
   exit("<script language='javascript'>alert('您已成功注销本次登陆！');window.location.href='./login.php';</script>");
-} elseif (isset($islogin) && $islogin == 1) {
+} elseif (isset($islogin_agent) && $islogin_agent == 1) {
   exit("<script language='javascript'>alert('您已登陆！');window.location.href='./';</script>");
 }
-$title = '用户登录';
+$title = '代理登录';
 include './head.php';
 ?>
 <nav class="navbar navbar-fixed-top navbar-default">

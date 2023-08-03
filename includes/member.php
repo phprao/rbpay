@@ -29,3 +29,14 @@ if (isset($_COOKIE["user_token"])) {
 		$islogin2 = 1;
 	}
 }
+
+if (isset($_COOKIE["agent_token"])) {
+	$token = authcode(daddslashes($_COOKIE['agent_token']), 'DECODE', SYS_KEY);
+	list($agent_id, $sid, $expiretime) = explode("\t", $token);
+	$agent_id = intval($agent_id);
+	$agentrow = $DB->getRow("SELECT * FROM pre_agent WHERE id='{$agent_id}' limit 1");
+	$session = md5($agentrow['id'] . $password_hash);
+	if ($session == $sid && $expiretime > time()) {
+		$islogin_agent = 1;
+	}
+}

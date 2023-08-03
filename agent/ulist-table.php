@@ -4,7 +4,7 @@
  * 商户列表
  **/
 include("../includes/common.php");
-if (isset($islogin) && $islogin == 1) {
+if (isset($islogin_agent) && $islogin_agent == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 
 function display_status($status, $uid)

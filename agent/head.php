@@ -25,7 +25,7 @@ $cdnpublic = '//cdn.staticfile.org/';
 </head>
 
 <body>
-  <?php if (isset($islogin) && $islogin == 1) { ?>
+  <?php if (isset($islogin_agent) && $islogin_agent == 1) { ?>
     <nav class="navbar navbar-fixed-top navbar-default">
       <div class="container">
         <div class="navbar-header">

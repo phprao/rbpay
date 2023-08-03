@@ -2,7 +2,7 @@
 include("../includes/common.php");
 $title = '彩虹支付管理中心';
 include './head.php';
-if (isset($islogin) && $islogin == 1) {
+if (isset($islogin_agent) && $islogin_agent == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 ?>
 <?php
