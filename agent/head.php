@@ -51,25 +51,8 @@ $cdnpublic = '//cdn.staticfile.org/';
             <li class="<?php echo checkIfActive('ulist') ?>">
               <a href="./ulist.php"><i class="fa fa-user"></i> 用户列表</a>
             </li>
-            <li class="<?php echo checkIfActive('pay_channel') ?>">
-              <a href="./pay_channel.php"><i class="fa fa-credit-card"></i> 支付通道</a>
-            </li>
-
-            <li class="<?php echo checkIfActive('set,gonggao') ?>">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cog"></i> 系统设置<b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="./set.php?mod=site">网站信息配置</a></li>
-                <li><a href="./gonggao.php">网站公告配置</a></li>
-                <li><a href="./set.php?mod=template">首页模板配置</a></li>
-                <li><a href="./set.php?mod=upimg">网站Logo上传</a></li>
-              </ul>
-            </li>
-            <li class="<?php echo checkIfActive('log') ?>">
-              <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cube"></i> 其他功能<b class="caret"></b></a>
-              <ul class="dropdown-menu">
-                <li><a href="./log.php">登录日志</a>
-                <li>
-              </ul>
+            <li class="<?php echo checkIfActive('record') ?>">
+              <a href="./record.php"><i class="fa fa-credit-card"></i> 资金明细</a>
             </li>
             <li><a href="./login.php?logout"><i class="fa fa-power-off"></i> 退出登录</a></li>
           </ul>

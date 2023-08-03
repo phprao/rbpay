@@ -190,32 +190,6 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
         listTable('start');
     }
 
-    function operation() {
-        var ii = layer.load(2, {
-            shade: [0.1, '#fff']
-        });
-        $.ajax({
-            type: 'POST',
-            url: 'ajax_withdraw.php?act=operation',
-            data: $('#form1').serialize(),
-            dataType: 'json',
-            success: function(data) {
-                layer.close(ii);
-                if (data.code == 0) {
-                    listTable();
-                    layer.alert(data.msg);
-                } else {
-                    layer.alert(data.msg);
-                }
-            },
-            error: function(data) {
-                layer.msg('请求超时');
-                listTable();
-            }
-        });
-        return false;
-    }
-
     function showOrder(trade_no) {
         var ii = layer.load(2, {
             shade: [0.1, '#fff']
@@ -264,75 +238,6 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
                 } else {
                     layer.alert(data.msg);
                 }
-            },
-            error: function(data) {
-                layer.msg('服务器错误');
-                return false;
-            }
-        });
-    }
-
-    function callnotify(trade_no) {
-        var ii = layer.load(2, {
-            shade: [0.1, '#fff']
-        });
-        $.ajax({
-            type: 'POST',
-            url: 'ajax_withdraw.php?act=notify',
-            data: {
-                trade_no: trade_no
-            },
-            dataType: 'json',
-            success: function(data) {
-                layer.close(ii);
-                if (data.code == 0) {
-                    layer.alert(data.msg);
-                } else {
-                    layer.alert(data.msg);
-                }
-            },
-            error: function(data) {
-                layer.msg('服务器错误');
-            }
-        });
-        return false;
-    }
-
-    function setStatus(trade_no, status) {
-        if (status == 1) {
-            var msg = '<span style="color:#0a9a0a">已付款</span>';
-        } else if (status == 2) {
-            var msg = '<span style="color:#4a3dca">已驳回</span>';
-        } else if (status == 3) {
-            var msg = '<span style="color:#4a3dca">强制驳回</span>';
-        } else {
-            var msg = '<span style="color:#0a9a0a">强制完成</span>';
-        }
-
-        var confirmobj = layer.confirm('你确实要 ' + msg + ' ？', {
-            btn: ['确定', '取消']
-        }, function() {
-            setStatusDo(trade_no, status);
-        }, function() {
-            layer.close(confirmobj);
-        });
-    }
-
-    function setStatusDo(trade_no, status) {
-        var ii = layer.load(2, {
-            shade: [0.1, '#fff']
-        });
-        $.ajax({
-            type: 'get',
-            url: 'ajax_withdraw.php',
-            data: 'act=setStatus&trade_no=' + trade_no + '&status=' + status,
-            dataType: 'json',
-            success: function(ret) {
-                layer.close(ii);
-                if (ret['code'] != 200) {
-                    alert(ret['msg'] ? ret['msg'] : '操作失败');
-                }
-                listTable();
             },
             error: function(data) {
                 layer.msg('服务器错误');

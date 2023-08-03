@@ -30,26 +30,14 @@ function display_status($status, $addtime, $config_order_timeout)
 	}
 	return $msg;
 }
-function display_operation($status, $trade_no)
-{
-	if ($status == 0)
-		$msg = '<li><a href="javascript:setStatus(\'' . $trade_no . '\', 1)">改已支付</a></li>';
-	else
-		$msg = '<li>&nbsp;无</li>';
-	return $msg;
-}
 
-$sqls = "";
+$sqls = " agent_id=$agent_id ";
+
 $links = '';
 if (isset($_GET['uid']) && !empty($_GET['uid'])) {
 	$uid = intval($_GET['uid']);
 	$sqls .= " AND A.`uid`='$uid'";
 	$links .= '&uid=' . $uid;
-}
-if (isset($_GET['channel']) && $_GET['channel'] > 0) {
-	$channel = intval($_GET['channel']);
-	$sqls .= " AND A.`channel`='$channel'";
-	$links .= '&channel=' . $channel;
 }
 if (isset($_GET['dstatus']) && $_GET['dstatus'] >= 0) {
 	$dstatus = intval($_GET['dstatus']);
@@ -79,32 +67,24 @@ if (isset($_GET['value']) && !empty($_GET['value'])) {
 	} else {
 		$sql = " A.`{$_GET['column']}`='{$_GET['value']}'";
 	}
-	$sql .= $sqls;
-	$numrows = $DB->getColumn("SELECT count(*) from pre_order A WHERE{$sql}");
+	$sql .= ' AND ' . $sqls;
+	$numrows = $DB->getColumn("SELECT count(*) from pre_order A WHERE {$sql}");
 
 	// 统计
-	$row = $DB->getRow("SELECT SUM(money) as money, SUM(getmoney) as getmoney from pre_order A WHERE{$sql}");
+	$row = $DB->getRow("SELECT SUM(money) as money, SUM(agent_getmoney) as agent_getmoney from pre_order A WHERE {$sql}");
 
-	if ($ismain) {
-		$con = sprintf('包含 %s 的共有 <span style="color:red;">%d</span> 条订单，商品订单总额 <span style="color:red;">%.2f</span>，手续费总额 <span style="color:red;">%.2f</span>', $_GET['value'], $numrows, $row['money'], $row['getmoney']);
-	} else {
-		$con = sprintf('包含 %s 的共有 <span style="color:red;">%d</span> 条订单，商品订单总额 <span style="color:red;">%.2f</span>', $_GET['value'], $numrows, $row['money']);
-	}
+	$con = sprintf('包含 %s 的共有 <span style="color:red;">%d</span> 条订单，商品订单总额 <span style="color:red;">%.2f</span>，代理收益总额 <span style="color:red;">%.2f</span>', $_GET['value'], $numrows, $row['money'], $row['agent_getmoney']);
+
 
 	$link = '&column=' . $_GET['column'] . '&value=' . $_GET['value'] . $links;
 } else {
-	$sql = " 1";
-	$sql .= $sqls;
-	$numrows = $DB->getColumn("SELECT count(*) from pre_order A WHERE{$sql}");
+	$sql = $sqls;
+	$numrows = $DB->getColumn("SELECT count(*) from pre_order A WHERE {$sql}");
 
 	// 统计
-	$row = $DB->getRow("SELECT SUM(money) as money, SUM(getmoney) as getmoney from pre_order A WHERE{$sql}");
+	$row = $DB->getRow("SELECT SUM(money) as money, SUM(agent_getmoney) as agent_getmoney from pre_order A WHERE {$sql}");
 
-	if ($ismain) {
-		$con = sprintf('共有 <span style="color:red;">%d</span> 条订单，商品订单总额 <span style="color:red;">%.2f</span>，手续费总额 <span style="color:red;">%.2f</span> ', $numrows, $row['money'], $row['getmoney']);
-	} else {
-		$con = sprintf('共有 <span style="color:red;">%d</span> 条订单，商品订单总额 <span style="color:red;">%.2f</span>', $numrows, $row['money']);
-	}
+	$con = sprintf('共有 <span style="color:red;">%d</span> 条订单，商品订单总额 <span style="color:red;">%.2f</span>，代理收益总额 <span style="color:red;">%.2f</span> ', $numrows, $row['money'], $row['agent_getmoney']);
 
 	$link = $links;
 }
@@ -131,7 +111,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'export') {
 	$objActSheet = $objExcel->getActiveSheet();
 	$objActSheet->setTitle('Sheet1');
 
-	$header = ['系统订单', '商户订单', '商户号', '网站域名', '商品名称', '订单金额', '实付金额', '手续费', '支付通道', '下单时间', '支付状态'];
+	$header = ['系统订单', '商户订单', '商户号', '网站域名', '商品名称', '订单金额', '实付金额', '代理收益', '支付通道', '下单时间', '支付状态'];
 	for ($i = 0; $i < count($header); $i++) {
 		$letter = strtoupper(chr(65 + $i));
 		$objActSheet->getColumnDimension($letter)->setWidth(25);
@@ -141,7 +121,7 @@ if (isset($_GET['action']) && $_GET['action'] == 'export') {
 	}
 
 	$line = 2;
-	$rs = $DB->query("SELECT A.*,B.plugin FROM pre_order A LEFT JOIN pre_channel B ON A.channel=B.id WHERE{$sql} order by addtime desc");
+	$rs = $DB->query("SELECT * FROM pre_order WHERE {$sql} order by addtime desc");
 	while ($res = $rs->fetch()) {
 		$objActSheet->setCellValueExplicit('A' . $line, $res['trade_no'], \PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('B' . $line, $res['out_trade_no'], \PHPExcel_Cell_DataType::TYPE_STRING);
@@ -150,8 +130,8 @@ if (isset($_GET['action']) && $_GET['action'] == 'export') {
 		$objActSheet->setCellValueExplicit('E' . $line, $res['name'], \PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('F' . $line, sprintf("%.2f", $res['money']), \PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('G' . $line, sprintf("%.2f", $res['realmoney']), \PHPExcel_Cell_DataType::TYPE_STRING);
-		$objActSheet->setCellValueExplicit('H' . $line, $ismain ? sprintf("%.2f", $res['getmoney']) : '--', \PHPExcel_Cell_DataType::TYPE_STRING);
-		$objActSheet->setCellValueExplicit('I' . $line, $res['channel'], \PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('H' . $line, sprintf("%.2f", $res['agent_getmoney']), \PHPExcel_Cell_DataType::TYPE_STRING);
+		$objActSheet->setCellValueExplicit('I' . $line, '', \PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('J' . $line, $res['addtime'], \PHPExcel_Cell_DataType::TYPE_STRING);
 		$objActSheet->setCellValueExplicit('K' . $line, display_status2($res['status'], $res['addtime'], $conf['config_order_timeout']), \PHPExcel_Cell_DataType::TYPE_STRING);
 		$line++;
@@ -175,11 +155,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'export') {
 					<th>系统订单号<br />商户订单号</th>
 					<th>商户号<br />网站域名</th>
 					<th>商品名称<br />订单金额</th>
-					<th>实际支付<br />手续费</th>
-					<th>支付通道</th>
+					<th>实际支付<br />代理收益</th>
 					<th>创建时间<br />完成时间</th>
 					<th>支付状态</th>
-					<th>操作</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -189,15 +167,9 @@ if (isset($_GET['action']) && $_GET['action'] == 'export') {
 				$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 				$offset = $pagesize * ($page - 1);
 
-				$rs = $DB->query("SELECT A.*,B.plugin FROM pre_order A LEFT JOIN pre_channel B ON A.channel=B.id WHERE{$sql} order by addtime desc limit $offset,$pagesize");
+				$rs = $DB->query("SELECT * FROM pre_order WHERE {$sql} order by addtime desc limit $offset,$pagesize");
 				while ($res = $rs->fetch()) {
-					$channelname = $DB->getColumn("SELECT name FROM pre_channel where id = {$res['channel']}");
-
-					if(!$ismain) {
-						$res['getmoney'] = '--';
-					}
-
-					echo '<tr><td><input type="checkbox" name="checkbox[]" id="list1" value="' . $res['trade_no'] . '" onClick="unselectall1()"><b><a href="javascript:showOrder(\'' . $res['trade_no'] . '\')" title="点击查看详情">' . $res['trade_no'] . '</a></b><br/>' . $res['out_trade_no'] . '</td><td><a href="./ulist.php?my=search&column=uid&value=' . $res['uid'] . '" target="_blank">' . $res['uid'] . '</a><br/><a onclick="openlink(\'http://' . $res['domain'] . '\')">' . $res['domain'] . '</a></td><td>' . $res['name'] . '<br/>￥<b>' . $res['money'] . '</b></td><td>￥<b>' . $res['realmoney'] . '</b><br/>￥<b>' . $res['getmoney'] . '</b></td><td>' . $channelname . ' (ID:' . $res['channel'] . ')</td><td>' . $res['addtime'] . '<br/>' . $res['endtime'] . '</td><td style="text-align:center">' . display_status($res['status'], $res['addtime'], $conf['config_order_timeout']) . '</td><td><div class="btn-group" role="group"><button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">操作订单 <span class="caret"></span></button><ul class="dropdown-menu">' . display_operation($res['status'], $res['trade_no']) . '</ul></div></td></tr>';
+					echo '<tr><td><input type="checkbox" name="checkbox[]" id="list1" value="' . $res['trade_no'] . '" onClick="unselectall1()"><b><a href="javascript:showOrder(\'' . $res['trade_no'] . '\')" title="点击查看详情">' . $res['trade_no'] . '</a></b><br/>' . $res['out_trade_no'] . '</td><td><a href="./ulist.php?my=search&column=uid&value=' . $res['uid'] . '" target="_blank">' . $res['uid'] . '</a><br/><a onclick="openlink(\'http://' . $res['domain'] . '\')">' . $res['domain'] . '</a></td><td>' . $res['name'] . '<br/>￥<b>' . $res['money'] . '</b></td><td>￥<b>' . $res['realmoney'] . '</b><br/>￥<b>' . $res['agent_getmoney'] . '</b></td><td>' . $res['addtime'] . '<br/>' . $res['endtime'] . '</td><td style="text-align:center">' . display_status($res['status'], $res['addtime'], $conf['config_order_timeout']) . '</td></tr>';
 				}
 				?>
 			</tbody>

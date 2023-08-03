@@ -6,7 +6,7 @@
 include("../includes/common.php");
 $title = '系统设置';
 include './head.php';
-if (isset($islogin_agent) && $islogin_agent == 1) {
+if (isset($islogin) && $islogin == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 ?>
 <div class="container" style="padding-top:70px;">

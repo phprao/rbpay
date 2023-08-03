@@ -45,9 +45,8 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 			<div class="form-group">
 				<label>搜索</label>
 				<select name="column" class="form-control" default="<?php echo $_GET['column'] ?? 'trade_no' ?>">
-					<option value="trade_no">订单号</option>
+					<option value="trade_no">平台订单号</option>
 					<option value="out_trade_no">商户订单号</option>
-					<option value="name">商品名称</option>
 				</select>
 			</div>
 			<div class="form-group">
@@ -55,9 +54,6 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 			</div>
 			<div class="form-group">
 				<input type="text" class="form-control" name="uid" style="width: 100px;" placeholder="商户号" value="<?php echo $_GET['uid'] ?? '' ?>">
-			</div>
-			<div class="form-group">
-				<input type="text" class="form-control" name="channel" style="width: 80px;" placeholder="通道ID" value="<?php echo $_GET['channel'] ?? '' ?>">
 			</div>
 			<div class="input-group">
 				<input type="datetime-local" id="starttime" name="starttime" class="form-control" placeholder="开始日期" autocomplete="off" title="留空则不限时间范围" value="<?php if (!empty($_GET['starttime'])) echo $_GET['starttime']; ?>">
@@ -147,13 +143,12 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 		var column = $("select[name='column']").val();
 		var value = $("input[name='value']").val();
 		var uid = $("input[name='uid']").val();
-		var channel = $("input[name='channel']").val();
 		var starttime = $("input[name='starttime']").val();
 		var endtime = $("input[name='endtime']").val();
 		if (value == '') {
-			listTable('uid=' + uid + '&channel=' + channel + '&starttime=' + starttime + '&endtime=' + endtime);
+			listTable('uid=' + uid + '&starttime=' + starttime + '&endtime=' + endtime);
 		} else {
-			listTable('column=' + column + '&value=' + value + '&uid=' + uid + '&channel=' + channel + '&starttime=' + starttime + '&endtime=' + endtime);
+			listTable('column=' + column + '&value=' + value + '&uid=' + uid + '&starttime=' + starttime + '&endtime=' + endtime);
 		}
 		return false;
 	}
@@ -163,13 +158,12 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 		var column = $("select[name='column']").val();
 		var value = $("input[name='value']").val();
 		var uid = $("input[name='uid']").val();
-		var channel = $("input[name='channel']").val();
 		var starttime = $("input[name='starttime']").val();
 		var endtime = $("input[name='endtime']").val();
 		if (value == '') {
-			query = 'uid=' + uid + '&channel=' + channel + '&starttime=' + starttime + '&endtime=' + endtime;
+			query = 'uid=' + uid + '&starttime=' + starttime + '&endtime=' + endtime;
 		} else {
-			query = 'column=' + column + '&value=' + value + '&uid=' + uid + '&channel=' + channel + '&starttime=' + starttime + '&endtime=' + endtime;
+			query = 'column=' + column + '&value=' + value + '&uid=' + uid + '&starttime=' + starttime + '&endtime=' + endtime;
 		}
 
 		window.open('order-table.php?action=export&dstatus=' + dstatus + '&' + query);
@@ -178,36 +172,9 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 	function searchClear() {
 		$("input[name='value']").val('');
 		$("input[name='uid']").val('');
-		$("input[name='channel']").val('');
 		$("input[name='starttime']").val('');
 		$("input[name='endtime']").val('');
 		listTable('start');
-	}
-
-	function operation() {
-		var ii = layer.load(2, {
-			shade: [0.1, '#fff']
-		});
-		$.ajax({
-			type: 'POST',
-			url: 'ajax_order.php?act=operation',
-			data: $('#form1').serialize(),
-			dataType: 'json',
-			success: function(data) {
-				layer.close(ii);
-				if (data.code == 0) {
-					listTable();
-					layer.alert(data.msg);
-				} else {
-					layer.alert(data.msg);
-				}
-			},
-			error: function(data) {
-				layer.msg('请求超时');
-				listTable();
-			}
-		});
-		return false;
 	}
 
 	function showOrder(trade_no) {
@@ -228,7 +195,6 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 					item += '<tr class="orderTitle"><td class="info" class="orderTitle">系统订单号</td><td colspan="5" class="orderContent">' + data.trade_no + '</td></tr>';
 					item += '<tr><td class="info" class="orderTitle">商户订单号</td><td colspan="5" class="orderContent">' + data.out_trade_no + '</td></tr>';
 					item += '<tr><td class="info">商户ID</td class="orderTitle"><td colspan="5" class="orderContent"><a href="./ulist.php?my=search&column=uid&value=' + data.uid + '" target="_blank">' + data.uid + '</a></td>';
-					item += '</tr><tr><td class="info" class="orderTitle">支付通道</td><td colspan="5" class="orderContent">' + data.channelname + '</td></tr>';
 					item += '</tr><tr><td class="info" class="orderTitle">商品名称</td><td colspan="5" class="orderContent">' + data.name + '</td></tr>';
 					item += '</tr><tr><td class="info" class="orderTitle">订单金额</td><td colspan="5" class="orderContent">' + data.money + '</td></tr>';
 					item += '</tr><tr><td class="info" class="orderTitle">实际支付金额</td><td colspan="5" class="orderContent">' + data.realmoney + '</td></tr>';
@@ -257,65 +223,6 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 				} else {
 					layer.alert(data.msg);
 				}
-			},
-			error: function(data) {
-				layer.msg('服务器错误');
-				return false;
-			}
-		});
-	}
-
-	function callnotify(trade_no) {
-		var ii = layer.load(2, {
-			shade: [0.1, '#fff']
-		});
-		$.ajax({
-			type: 'POST',
-			url: 'ajax_order.php?act=notify',
-			data: {
-				trade_no: trade_no
-			},
-			dataType: 'json',
-			success: function(data) {
-				layer.close(ii);
-				if (data.code == 0) {
-					layer.alert(data.msg);
-				} else {
-					layer.alert(data.msg);
-				}
-			},
-			error: function(data) {
-				layer.msg('服务器错误');
-			}
-		});
-		return false;
-	}
-
-	function setStatus(trade_no, status) {
-        var confirmobj = layer.confirm('确实已收到付款 ？', {
-            btn: ['确定', '取消']
-        }, function() {
-            setStatusDo(trade_no, status);
-        }, function() {
-            layer.close(confirmobj);
-        });
-	}
-
-	function setStatusDo(trade_no, status) {
-		var ii = layer.load(2, {
-			shade: [0.1, '#fff']
-		});
-		$.ajax({
-			type: 'get',
-			url: 'ajax_order.php',
-			data: 'act=setStatus&trade_no=' + trade_no + '&status=' + status,
-			dataType: 'json',
-			success: function(ret) {
-				layer.close(ii);
-				if (ret['code'] != 200) {
-					alert(ret['msg'] ? ret['msg'] : '操作失败');
-				}
-				listTable();
 			},
 			error: function(data) {
 				layer.msg('服务器错误');

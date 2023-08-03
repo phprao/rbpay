@@ -22,7 +22,7 @@ if (isset($_POST['user']) && isset($_POST['pass'])) {
   } elseif (!empty($user) && !empty($pass)) {
     $city = '';
     $md5pass = md5($pass);
-    $agentrow = $DB->getRow("SELECT * FROM pre_agent WHERE agent_user='{$user}' and agent_pass='{$md5pass}' limit 1");
+    $agentrow = $DB->getRow("SELECT * FROM pre_agent WHERE agent_user='{$user}' and agent_pass='{$md5pass}' and `status`=1 limit 1");
     if (empty($agentrow)) {
       exit("<script language='javascript'>alert('用户名或密码不正确！');history.go(-1);</script>");
     } else {
