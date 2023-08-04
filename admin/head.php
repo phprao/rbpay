@@ -51,6 +51,9 @@ $cdnpublic = '//cdn.staticfile.org/';
             <li class="<?php echo checkIfActive('ulist') ?>">
               <a href="./ulist.php"><i class="fa fa-user"></i> 用户列表</a>
             </li>
+            <li class="<?php echo checkIfActive('agentlist') ?>">
+              <a href="./agentlist.php"><i class="fa fa-user"></i> 代理列表</a>
+            </li>
             <li class="<?php echo checkIfActive('pay_channel') ?>">
               <a href="./pay_channel.php"><i class="fa fa-credit-card"></i> 支付通道</a>
             </li>

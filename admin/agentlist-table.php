@@ -1,24 +1,41 @@
 <?php
 
 /**
- * 收支明细
+ * 商户列表
  **/
 include("../includes/common.php");
-if (isset($islogin_agent) && $islogin_agent == 1) {
+if (isset($islogin) && $islogin == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 
-$sql = " agent_id=$agent_id ";
-
-if (isset($_GET['value']) && !empty($_GET['value'])) {
-	$sql .= " AND `{$_GET['column']}`='{$_GET['value']}' ";
-	$con = '包含 ' . $_GET['value'] . ' 的共有 <b>' . $numrows . '</b> 条记录';
-	$link = '&my=search&column=' . $_GET['column'] . '&value=' . $_GET['value'];
-} else {
-	$con = '共有 <b>' . $numrows . '</b> 条记录';
-	$link = '';
+function display_status($status, $id)
+{
+	if ($status == 1) {
+		return '<a href="javascript:setStatus(' . $id . ', 0)"><font color=green><i class="fa fa-check-circle"></i>正常</font></a>';
+	} else {
+		return '<a href="javascript:setStatus(' . $id . ', 1)"><font color=red><i class="fa fa-times-circle"></i>封禁</font></a>';
+	}
 }
 
-$numrows = $DB->getColumn("SELECT count(*) from pre_ageng_record WHERE {$sql}");
+if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
+	$dstatus = explode('_', $_GET['dstatus']);
+	$sqls = " `{$dstatus[0]}`='{$dstatus[1]}'";
+}
+
+if (isset($_GET['value']) && !empty($_GET['value'])) {
+	$sql = " `{$_GET['column']}`='{$_GET['value']}'";
+	if (isset($sqls)) $sql .= " AND " . $sqls;
+	$numrows = $DB->getColumn("SELECT count(*) from pre_agent WHERE {$sql}");
+	$con = '包含 ' . $_GET['value'] . ' 的共有 <b>' . $numrows . '</b> 个代理';
+	$link = '&column=' . $_GET['column'] . '&value=' . $_GET['value'];
+} else {
+	$numrows = $DB->getColumn("SELECT count(*) from pre_agent WHERE 1");
+	$sql = " 1";
+	if (isset($sqls)) $sql .= " AND " . $sqls;
+	$con = '共有 <b>' . $numrows . '</b> 个代理';
+}
+if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
+	$link .= "&dstatus" . $_GET['dstatus'];
+}
 
 ?>
 <div class="table-responsive">
@@ -26,12 +43,11 @@ $numrows = $DB->getColumn("SELECT count(*) from pre_ageng_record WHERE {$sql}");
 	<table class="table table-striped table-bordered table-vcenter">
 		<thead>
 			<tr>
-				<th>操作类型</th>
-				<th>变更金额</th>
-				<th>变更前金额</th>
-				<th>变更后金额</th>
-				<th>时间</th>
-				<th>关联订单号</th>
+				<th>代理ID/登录账号</th>
+				<th>代理余额</th>
+				<th>商户列表</th>
+				<th>添加时间</th>
+				<th>状态</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -41,17 +57,18 @@ $numrows = $DB->getColumn("SELECT count(*) from pre_ageng_record WHERE {$sql}");
 			$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 			$offset = $pagesize * ($page - 1);
 
-			$rs = $DB->query("SELECT * FROM pre_ageng_record WHERE {$sql} order by id desc limit $offset,$pagesize");
+			$rs = $DB->query("SELECT * FROM pre_agent WHERE {$sql} order by id desc limit $offset,$pagesize");
 			while ($res = $rs->fetch()) {
-				$a = '无';
-				if ($res['trade_no']) {
-					if ($res['trade_no'][0] == 'P') {
-						$a = '<a href="./order.php?column=trade_no&value=' . $res['trade_no'] . '" target="_blank">' . $res['trade_no'] . '</a>';
-					} else {
-						$a = '<a href="./withdraw.php?column=trade_no&value=' . $res['trade_no'] . '" target="_blank">' . $res['trade_no'] . '</a>';
-					}
+
+				if (!$ismain) {
+					$showRecharge = '<b>' . $res['money'] . '</b>';
+				} else {
+					$showRecharge = '<b><a href="javascript:showRecharge(' . $res['id'] . ')">' . $res['money'] . '</a></b>';
 				}
-				echo '<tr><td>' . ($res['action'] == 2 ? '<font color="red">' . $res['type'] . '</font>' : '<font color="green">' . $res['type'] . '</font>') . '</td><td>' . ($res['action'] == 2 ? '- ' : '+ ') . $res['money'] . '</td><td>' . $res['oldmoney'] . '</td><td>' . $res['newmoney'] . '</td><td>' . $res['date'] . '</td><td>' . $a . '</td></tr>';
+
+				$numrows = $DB->getColumn("SELECT count(*) from pre_user WHERE agent_id={$res['id']}");
+
+				echo '<tr><td><b>' . $res['id'] . '</b><br/>' . $res['agent_name'] . '</td><td class="money">' . $showRecharge . '</td><td>' . $numrows . '</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['id']) . '</td></tr>';
 			}
 			?>
 		</tbody>

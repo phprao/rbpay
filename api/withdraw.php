@@ -97,8 +97,11 @@ try {
         exitWithJson(6000, '商户余额不足');
     }
 
+    // 代理收益
+    $agent_getmoney = $getmoney * $userrow['agent_withdraw_rate'] / 100;
+
     // 写入订单
-    $re = $DB->exec("INSERT INTO `pre_withdraw_order` (`trade_no`,`out_trade_no`,`uid`,`addtime`,`date`,`money`,`realmoney`,`getmoney`,`notify_url`,`bankname`,`account`,`username`,`ip`) VALUES (:trade_no, :out_trade_no, :uid, NOW(), CURDATE(), :money, :realmoney, :getmoney, :notify_url, :bankname, :account, :username, :clientip)", [':trade_no' => $trade_no, ':out_trade_no' => $out_trade_no, ':uid' => $uid, ':money' => $money, ':realmoney' => $realmoney, ':getmoney' => $getmoney, ':notify_url' => $notify_url, ':bankname' => $bankname, ':account' => $account, ':username' => $username, ':clientip' => $clientip]);
+    $re = $DB->exec("INSERT INTO `pre_withdraw_order` (`trade_no`,`out_trade_no`,`uid`,`addtime`,`date`,`money`,`realmoney`,`getmoney`,`notify_url`,`bankname`,`account`,`username`,`ip`,'agent_id','agent_withdraw_rate','agent_getmoney') VALUES (:trade_no, :out_trade_no, :uid, NOW(), CURDATE(), :money, :realmoney, :getmoney, :notify_url, :bankname, :account, :username, :clientip, :agent_id, :agent_withdraw_rate, :agent_getmoney)", [':trade_no' => $trade_no, ':out_trade_no' => $out_trade_no, ':uid' => $uid, ':money' => $money, ':realmoney' => $realmoney, ':getmoney' => $getmoney, ':notify_url' => $notify_url, ':bankname' => $bankname, ':account' => $account, ':username' => $username, ':clientip' => $clientip, ':agent_id' => $userrow['agent_id'], ':agent_withdraw_rate' => $userrow['agent_withdraw_rate'], ':agent_getmoney' => $agent_getmoney]);
 
     if (!$re) {
         throw new Exception("pre_withdraw_order写入失败");

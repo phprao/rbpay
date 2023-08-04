@@ -1,4 +1,19 @@
 <?php
+
+const RECORD_TYPE_HTJK = '后台加款';
+const RECORD_TYPE_HTKK = '后台扣款';
+const RECORD_TYPE_ZFJK = '支付订单加款';
+const RECORD_TYPE_DDTK = '订单退款';
+const RECORD_TYPE_TXKC = '用户提现+手续费扣除';
+const RECORD_TYPE_TXWCKC = '提现订单强制完成扣除';
+const RECORD_TYPE_TXBHJQ = '提现订单强制驳回加钱';
+const RECORD_TYPE_ZFSY = '支付收益加款';
+const RECORD_TYPE_TXSY = '提现收益加款';
+const RECORD_TYPE_DLTX = '代理提现';
+const RECORD_TYPE_TXSYKK = '已付款的提现订单强制驳回-提现收益扣款';
+const RECORD_ACTION_INC = 1; // 加钱
+const RECORD_ACTION_DEC = 2; // 扣钱
+
 function curl_get($url)
 {
 	global $conf;
@@ -740,17 +755,17 @@ function changeUserMoney($uid, $money, $add = true, $type = null, $orderid = nul
 {
 	global $DB;
 	if ($money <= 0) return;
-	if ($type == '订单退款') {
-		$isrefund = $DB->getColumn("SELECT id FROM pre_record WHERE type='订单退款' AND trade_no='{$orderid}' LIMIT 1");
+	if ($type == RECORD_TYPE_DDTK) {
+		$isrefund = $DB->getColumn("SELECT id FROM pre_record WHERE type='" . RECORD_TYPE_DDTK . "' AND trade_no='{$orderid}' LIMIT 1");
 		if ($isrefund) return;
 	}
 	$DB->beginTransaction();
 	$oldmoney = $DB->getColumn("SELECT money FROM pre_user WHERE uid='{$uid}' LIMIT 1 FOR UPDATE");
 	if ($add == true) {
-		$action = 1;
+		$action = RECORD_ACTION_INC;
 		$newmoney = round($oldmoney + $money, 2);
 	} else {
-		$action = 2;
+		$action = RECORD_ACTION_DEC;
 		$newmoney = round($oldmoney - $money, 2);
 	}
 	$res = $DB->exec("UPDATE pre_user SET money='{$newmoney}' WHERE uid='{$uid}'");
@@ -1271,11 +1286,8 @@ function notifyCustom($order)
 			'sign' => '',
 			'sign_type' => 'MD5',
 			'trade_status' => 'TRADE_SUCCESS',
+			'realmoney' => $order['realmoney'],
 		];
-
-		if (in_array($order['uid'], [1007, 1010, 1017])) {
-			$param['realmoney'] = $order['realmoney'];
-		}
 
 		$prestr = \lib\PayUtils::createLinkstring(\lib\PayUtils::argSort(\lib\PayUtils::paraFilter($param)));
 		$param['sign'] = \lib\PayUtils::md5Sign($prestr, $user['key']);
@@ -1398,6 +1410,11 @@ function updateOrderStatusAndUserMoney($order)
 		addLog('[updateOrderStatusAndUserMoney]商户不存在uid=' . $order['uid'], 'ERROR');
 		return false;
 	}
+	$agent = $DB->getRow("select * from pre_agent where id = {$user['agent_id']} limit 1");
+	if (empty($agent)) {
+		addLog('[updateOrderStatusAndUserMoney]代理不存在id=' . $user['agent_id'], 'ERROR');
+		return false;
+	}
 
 	try {
 		$DB->beginTransaction();
@@ -1413,26 +1430,22 @@ function updateOrderStatusAndUserMoney($order)
 			throw new Exception("无需重复更新订单状态");
 		}
 
-		if (in_array($order['uid'], [1007, 1010])) {
-			// 1007商户实付金额是上浮的，应采用实付金额，否则商户会有亏损
-			// 1010商户实付金额是2倍订单金额的上浮，应采用实付金额，否则商户会有亏损
-			$changemoney = $order['realmoney'] - $order['getmoney'];
-		} else {
-			// 修改商户余额：订单金额 - 手续费
-			$changemoney = $order['money'] - $order['getmoney'];
-		}
+		// 修改商户余额：订单金额 - 手续费
+		$changemoney = $order['money'] - $order['getmoney'];
+
 		$re = $DB->exec("update pre_user set money = money + {$changemoney} where uid = {$order['uid']} limit 1");
 		if ($re === false) {
 			throw new Exception("修改商户余额失败");
 		}
 
 		// 记录
-		$newmoney = $user['money'] + $changemoney;
-
-		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, 1, :money, :oldmoney, :newmoney, '支付订单加款', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $newmoney, ':trade_no' => $order['trade_no']]);
+		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, " . RECORD_ACTION_INC . ", :money, :oldmoney, :newmoney, '" . RECORD_TYPE_ZFJK . "', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $user['money'] + $changemoney, ':trade_no' => $order['trade_no']]);
 		if ($re === false) {
 			throw new Exception("添加余额变动记录失败");
 		}
+
+		// 代理收益 ---------------------------------------------------------
+		updateAgentAndRecord($agent, $order, RECORD_ACTION_INC, RECORD_TYPE_ZFSY);
 
 		$DB->commit();
 		return true;
@@ -1440,6 +1453,83 @@ function updateOrderStatusAndUserMoney($order)
 		$DB->rollBack();
 		addLog(sprintf("[updateOrderStatusAndUserMoney]%s in %s:%d, %s", $e->getMessage(), $e->getFile(), $e->getLine(), $DB->error()), 'ERROR');
 		return false;
+	}
+}
+
+function changeAgentMoney($agent_id, $money, $action, $type)
+{
+	global $DB;
+
+	if ($money <= 0 || $agent_id <= 0) {
+		return;
+	}
+
+	$agent = $DB->getRow("select * from pre_agent where id = {$agent_id} limit 1");
+	if (empty($agent)) {
+		addLog('[changeAgentMoney]代理不存在id=' . $agent_id, 'ERROR');
+		return false;
+	}
+
+	try {
+		$DB->beginTransaction();
+
+		if ($action == RECORD_ACTION_INC) {
+			$re = $DB->exec("update pre_agent set agent_money = agent_money + {$money} where id = {$agent_id} limit 1");
+		} else {
+			$re = $DB->exec("update pre_agent set agent_money = agent_money - {$money} where id = {$agent_id} limit 1");
+		}
+		if ($re === false) {
+			throw new Exception("修改代理余额失败");
+		}
+
+		// 记录
+		if ($action == RECORD_ACTION_INC) {
+			$newmoney = $agent['agent_money'] + $money;
+		} else {
+			$newmoney = $agent['agent_money'] - $money;
+		}
+
+		$re = $DB->exec("INSERT INTO `pre_agent_record` (`agent_id`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `date`) VALUES (:agent_id, " . $action . ", :money, :oldmoney, :newmoney, '" . $type . "', NOW())", [':agent_id' => $agent_id, ':money' => $money, ':oldmoney' => $agent['agent_money'], ':newmoney' => $newmoney]);
+		if ($re === false) {
+			throw new Exception("添加代理余额变动记录失败");
+		}
+
+		$DB->commit();
+		return true;
+	} catch (Exception $e) {
+		$DB->rollBack();
+		addLog(sprintf("[changeAgentMoney]%s in %s:%d, %s", $e->getMessage(), $e->getFile(), $e->getLine(), $DB->error()), 'ERROR');
+		return false;
+	}
+}
+
+function updateAgentAndRecord($agent, $order, $action, $type)
+{
+	global $DB;
+
+	if ($agent['agent_status'] == 1 && $order['agent_getmoney'] > 0) {
+		$agent_getmoney = $order['agent_getmoney'];
+		$agent_id = $order['agent_id'];
+		if ($action == RECORD_ACTION_INC) {
+			$re = $DB->exec("update pre_agent set agent_money = agent_money + {$agent_getmoney} where id = {$agent_id} limit 1");
+		} else {
+			$re = $DB->exec("update pre_agent set agent_money = agent_money - {$agent_getmoney} where id = {$agent_id} limit 1");
+		}
+		if ($re === false) {
+			throw new Exception("修改代理余额失败");
+		}
+
+		// 记录
+		if ($action == RECORD_ACTION_INC) {
+			$newmoney = $agent['agent_money'] + $agent_getmoney;
+		} else {
+			$newmoney = $agent['agent_money'] - $agent_getmoney;
+		}
+
+		$re = $DB->exec("INSERT INTO `pre_agent_record` (`agent_id`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:agent_id, " . $action . ", :money, :oldmoney, :newmoney, '" . $type . "', :trade_no, NOW())", [':agent_id' => $agent_id, ':money' => $agent_getmoney, ':oldmoney' => $agent['agent_money'], ':newmoney' => $newmoney, ':trade_no' => $order['trade_no']]);
+		if ($re === false) {
+			throw new Exception("添加代理余额变动记录失败");
+		}
 	}
 }
 
@@ -1457,6 +1547,11 @@ function updateWithdrawOrderStatusAndUserMoney($order)
 	$user = $DB->getRow("select * from pre_user where uid = {$order['uid']} limit 1");
 	if (empty($user)) {
 		addLog('[updateWithdrawOrderStatusAndUserMoney]商户不存在uid=' . $order['uid'], 'ERROR');
+		return false;
+	}
+	$agent = $DB->getRow("select * from pre_agent where id = {$user['agent_id']} limit 1");
+	if (empty($agent)) {
+		addLog('[updateOrderStatusAndUserMoney]代理不存在id=' . $user['agent_id'], 'ERROR');
 		return false;
 	}
 
@@ -1487,12 +1582,13 @@ function updateWithdrawOrderStatusAndUserMoney($order)
 		}
 
 		// 记录
-		$newmoney = $user['money'] - $changemoney;
-
-		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, 2, :money, :oldmoney, :newmoney, '用户提现+手续费扣除', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $newmoney, ':trade_no' => $order['trade_no']]);
+		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, " . RECORD_ACTION_DEC . ", :money, :oldmoney, :newmoney, '" . RECORD_TYPE_TXKC . "', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $user['money'] - $changemoney, ':trade_no' => $order['trade_no']]);
 		if ($re === false) {
 			throw new Exception("添加余额变动记录失败");
 		}
+
+		// 代理收益 ---------------------------------------------------------
+		updateAgentAndRecord($agent, $order, RECORD_ACTION_INC, RECORD_TYPE_TXSY);
 
 		$DB->commit();
 		return true;
@@ -1517,6 +1613,11 @@ function updateWithdrawOrderStatusAndUserMoneyEnforceSuccess($order)
 	$user = $DB->getRow("select * from pre_user where uid = {$order['uid']} limit 1");
 	if (empty($user)) {
 		addLog('[updateWithdrawOrderStatusAndUserMoneyEnforceSuccess]商户不存在uid=' . $order['uid'], 'ERROR');
+		return false;
+	}
+	$agent = $DB->getRow("select * from pre_agent where id = {$user['agent_id']} limit 1");
+	if (empty($agent)) {
+		addLog('[updateOrderStatusAndUserMoney]代理不存在id=' . $user['agent_id'], 'ERROR');
 		return false;
 	}
 
@@ -1547,12 +1648,13 @@ function updateWithdrawOrderStatusAndUserMoneyEnforceSuccess($order)
 		}
 
 		// 记录
-		$newmoney = $user['money'] - $changemoney;
-
-		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, 2, :money, :oldmoney, :newmoney, '提现订单强制完成扣除', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $newmoney, ':trade_no' => $order['trade_no']]);
+		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, " . RECORD_ACTION_DEC . ", :money, :oldmoney, :newmoney, '" . RECORD_TYPE_TXWCKC . "', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $user['money'] - $changemoney, ':trade_no' => $order['trade_no']]);
 		if ($re === false) {
 			throw new Exception("添加余额变动记录失败");
 		}
+
+		// 代理收益 ---------------------------------------------------------
+		updateAgentAndRecord($agent, $order, RECORD_ACTION_INC, RECORD_TYPE_TXSY);
 
 		$DB->commit();
 		return true;
@@ -1579,6 +1681,11 @@ function updateWithdrawOrderStatusAndUserMoneyEnforceReject($order)
 		addLog('[updateWithdrawOrderStatusAndUserMoneyEnforceReject]商户不存在uid=' . $order['uid'], 'ERROR');
 		return false;
 	}
+	$agent = $DB->getRow("select * from pre_agent where id = {$user['agent_id']} limit 1");
+	if (empty($agent)) {
+		addLog('[updateOrderStatusAndUserMoney]代理不存在id=' . $user['agent_id'], 'ERROR');
+		return false;
+	}
 
 	try {
 		$DB->beginTransaction();
@@ -1602,12 +1709,13 @@ function updateWithdrawOrderStatusAndUserMoneyEnforceReject($order)
 		}
 
 		// 记录
-		$newmoney = $user['money'] + $changemoney;
-
-		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, 1, :money, :oldmoney, :newmoney, '提现订单强制驳回加钱', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $newmoney, ':trade_no' => $order['trade_no']]);
+		$re = $DB->exec("INSERT INTO `pre_record` (`uid`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:uid, " . RECORD_ACTION_INC . ", :money, :oldmoney, :newmoney, '" . RECORD_TYPE_TXBHJQ . "', :trade_no, NOW())", [':uid' => $order['uid'], ':money' => $changemoney, ':oldmoney' => $user['money'], ':newmoney' => $user['money'] + $changemoney, ':trade_no' => $order['trade_no']]);
 		if ($re === false) {
 			throw new Exception("添加余额变动记录失败");
 		}
+
+		// 代理收益 ---------------------------------------------------------
+		updateAgentAndRecord($agent, $order, RECORD_ACTION_DEC, RECORD_TYPE_TXSYKK);
 
 		$DB->commit();
 		return true;

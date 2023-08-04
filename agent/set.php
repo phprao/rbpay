@@ -6,7 +6,7 @@
 include("../includes/common.php");
 $title = '修改密码';
 include './head.php';
-if (isset($islogin) && $islogin == 1) {
+if (isset($islogin_agent) && $islogin_agent == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 
 $agentrow = $DB->getRow("SELECT * FROM pre_agent WHERE id='{$agent_id}' limit 1");
@@ -26,12 +26,13 @@ if ($mod == 'account_n' && $_POST['do'] == 'submit') {
 	if ($newpwd != $newpwd2 || empty($newpwd)) {
 		showmsg('新密码错误！', 3);
 	}
+	$modpassnew = md5($newpwd);
 
-	$DB->exec("UPDATE pre_agent set agent_pass = '{$md5pass}' where id = {$agent_id} limit 1");
+	$DB->exec("UPDATE pre_agent set agent_pass = '{$modpassnew}' where id = {$agent_id} limit 1");
 
 	setcookie("agent_token", "", time() - 604800);
 
-	if ($ad) showmsg('修改成功！请重新登录', 1);
+	showmsg('修改成功！请重新登录', 1);
 }
 
 ?>

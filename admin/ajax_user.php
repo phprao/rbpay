@@ -35,9 +35,9 @@ switch ($act) {
 			exit('{"code":-1,"msg":"当前用户不存在！"}');
 		if ($do == 1 && $rmb > $row['money']) $rmb = $row['money'];
 		if ($do == 0) {
-			changeUserMoney($uid, $rmb, true, '后台加款');
+			changeUserMoney($uid, $rmb, true, RECORD_TYPE_HTJK);
 		} else {
-			changeUserMoney($uid, $rmb, false, '后台扣款');
+			changeUserMoney($uid, $rmb, false, RECORD_TYPE_HTKK);
 		}
 		exit('{"code":0,"msg":"succ"}');
 		break;

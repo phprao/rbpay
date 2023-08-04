@@ -96,25 +96,16 @@ if ($channelId) {
 		$pay_rate = $userrow['pay_rate_bank'];
 	}
 
-	if ($pid == 1007) {
-		// 应客户要求，上浮加点，加上随机两位小数
-		$realmoney = round($money + $random, 2);
-		// 手续费为订单金额*费率
-		$getmoney = round($money * $pay_rate / 100, 2);
-	} elseif ($pid == 1010) {
-		// 应客户要求：实际支付金额是订单金额的2倍，上浮加点
-		$realmoney = round(2 * $money + $random, 2);
-		// 手续费为2倍订单金额*费率
-		$getmoney = round(2 * $money * $pay_rate / 100, 2);
-	} else {
-		// 对商品金额减去1，然后加上随机两位小数
-		$realmoney = round($money - 1 + $random, 2);
-		// 手续费为订单金额*费率
-		$getmoney = round($money * $pay_rate / 100, 2);
-	}
+	// 对商品金额减去1，然后加上随机两位小数
+	$realmoney = round($money - 1 + $random, 2);
+	// 手续费为订单金额*费率
+	$getmoney = round($money * $pay_rate / 100, 2);
+
+	// 代理收益
+	$agent_getmoney = $getmoney * $userrow['agent_pay_rate'] / 100;
 
 	$trade_no = 'P' . date("YmdHis") . rand(11111, 99999);
-	if (!$DB->exec("INSERT INTO `pre_order` (`trade_no`,`out_trade_no`,`uid`,`addtime`,`date`,`name`,`money`,`notify_url`,`param`,`domain`,`ip`,`status`, `type`, `channel`, `realmoney`, `getmoney`) VALUES (:trade_no, :out_trade_no, :uid, NOW(), CURDATE(), :name, :money, :notify_url, :param, :domain, :clientip, 0, :type, :channel, :realmoney, :getmoney)", [':trade_no' => $trade_no, ':out_trade_no' => $out_trade_no, ':uid' => $pid, ':name' => $name, ':money' => $money, ':notify_url' => $notify_url, ':domain' => $domain, ':clientip' => $clientip, ':param' => $param, ':type' => $typeInfo['id'], ':channel' => $channelId, ':realmoney' => $realmoney, ':getmoney' => $getmoney])) {
+	if (!$DB->exec("INSERT INTO `pre_order` (`trade_no`,`out_trade_no`,`uid`,`addtime`,`date`,`name`,`money`,`notify_url`,`param`,`domain`,`ip`,`status`, `type`, `channel`, `realmoney`, `getmoney`, 'agent_id', 'agent_pay_rate', 'agent_getmoney') VALUES (:trade_no, :out_trade_no, :uid, NOW(), CURDATE(), :name, :money, :notify_url, :param, :domain, :clientip, 0, :type, :channel, :realmoney, :getmoney, :agent_id, :agent_pay_rate, :agent_getmoney)", [':trade_no' => $trade_no, ':out_trade_no' => $out_trade_no, ':uid' => $pid, ':name' => $name, ':money' => $money, ':notify_url' => $notify_url, ':domain' => $domain, ':clientip' => $clientip, ':param' => $param, ':type' => $typeInfo['id'], ':channel' => $channelId, ':realmoney' => $realmoney, ':getmoney' => $getmoney, ':agent_id' => $userrow['agent_id'], ':agent_pay_rate' => $userrow['agent_pay_rate'], ':agent_getmoney' => $agent_getmoney])) {
 		sysmsg('商户订单号重复');
 	}
 } else {
