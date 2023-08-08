@@ -18,7 +18,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
   <p>
     <font color="#777">此接口可用于用户前台直接发起支付，使用form表单跳转或拼接成url跳转。</font>
   </p>
-  <p>URL地址：<font color="#29389f">http://payapi.dx888.me/submit.php</font>
+  <p>URL地址：<font color="#29389f">http://payapi.hkrainbowpay.com/submit.php</font>
   </p>
   <p>POST数据：<font color="#29389f">pid={商户ID}&amp;type={支付方式}&amp;out_trade_no={商户订单号}&amp;notify_url={服务器异步通知地址}&amp;name={商品名称}&amp;money={金额}&amp;sign={签名字符串}&amp;sign_type=MD5</font>
   </p>
@@ -238,7 +238,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
   <p>
     <font color="#777">此接口可用于查询订单的支付状态。</font>
   </p>
-  <p>URL地址：<font color="#29389f">http://payapi.dx888.me/order_status.php</font>
+  <p>URL地址：<font color="#29389f">http://payapi.hkrainbowpay.com/order_status.php</font>
   </p>
   <p>POST</font>
   </p>
@@ -316,7 +316,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
   <p>
     <font color="#777">此接口可用于服务器后端发起提现请求</font>
   </p>
-  <p>URL地址：<font color="#29389f">http://payapi.dx888.me/withdraw.php</font>
+  <p>URL地址：<font color="#29389f">http://payapi.hkrainbowpay.com/withdraw.php</font>
   </p>
   <p>POST</font>
   </p>
@@ -556,7 +556,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
   <p>
     <font color="#777">此接口可用于查询提现订单的支付状态。</font>
   </p>
-  <p>URL地址：<font color="#29389f">http://payapi.dx888.me/withdraw_status.php</font>
+  <p>URL地址：<font color="#29389f">http://payapi.hkrainbowpay.com/withdraw_status.php</font>
   </p>
   <p>POST</font>
   </p>

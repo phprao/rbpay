@@ -5,7 +5,7 @@ require '../includes/common.php';
 $t = [
     'pid' => '1001',
     'out_trade_no' => "T" . date("YmdHis") . rand(11111, 99999),
-    'notify_url' => 'http://payapi.dx888.me/notify_custom.php',
+    'notify_url' => 'http://payapi.hkrainbowpay.com/notify_custom.php',
     'money' => strval(rand(100, 200)),
     'bankname' => '交通银行',
     'account' => '111111111',

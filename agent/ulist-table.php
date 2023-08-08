@@ -65,7 +65,7 @@ if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
 				$res['pay_rate'] = $res['pay_rate'] . '% / ' . $res['pay_rate_bank'] . '%';
 				$res['withdraw_rate'] = $res['withdraw_rate'] . '% / ' . $res['withdraw_rate_bank'] . '%';
 
-				echo '<tr><td><b>' . $res['uid'] . '</b><br/>' . $res['phone'] . '</td><td class="money">' . $res['money'] . '</td><td>' . $res['pay_rate'] . '<br/>代理费 ' . $res['agent_pay_rate'] . '%</td><td>' . $res['withdraw_rate'] . '<br/>代理费 ' . $res['agent_withdraw_rate'] . '%</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['uid']) . '</td></tr>';
+				echo '<tr><td><b>' . $res['uid'] . '</b><br/>' . $res['phone'] . '</td><td class="money">' . $res['money'] . '</td><td>' . $res['pay_rate'] . '<br/>代理佣金 ' . $res['agent_pay_rate'] . '%</td><td>' . $res['withdraw_rate'] . '<br/>代理佣金 ' . $res['agent_withdraw_rate'] . '%</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['uid']) . '</td></tr>';
 			}
 			?>
 		</tbody>

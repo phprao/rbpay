@@ -60,7 +60,7 @@ class CronFunc
 
         // {"money":"500","name":"商品一批","notify_url":"https://dg66.net/payment/payresult/hkpay2","out_trade_no":"AH16607993184790","param":"","pid":"1002","type":"charge","sign":"b5334e04f594cc704f0321b434e66dc6","sign_type":"MD5"}
 
-        // http://payapi.dx888.me/submit.php?pid=1010&type=charge&out_trade_no=52076&notify_url=http://localhost:64339/services/dxpayCallback.ashx&name=AE365CLUB&money=31&sign=00b075d2330d5add11989d70a51df9f6&sign_type=MD5
+        // http://payapi.hkrainbowpay.com/submit.php?pid=1010&type=charge&out_trade_no=52076&notify_url=http://localhost:64339/services/dxpayCallback.ashx&name=AE365CLUB&money=31&sign=00b075d2330d5add11989d70a51df9f6&sign_type=MD5
 
         $t = [
             'pid' => '1010',
