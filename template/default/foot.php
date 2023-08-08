@@ -12,10 +12,6 @@ if(!defined('IN_CRONLITE'))exit();
 <li><a href="agreement.html" target="_blank">服务条款</a></li>
 <li><a href="doc.html" target="_blank">开发文档</a></li>
 </ul>
-<ul class="price">
-<h4>关于我们</h4>
-<li><?php echo $conf['sitename']?>是<?php echo $conf['orgname']?>旗下的免签约支付产品</li>
-</ul>
 <ul class="about"style="width: 40%;padding-left: 22px;">
 <h4>联系我们</h4>
 <li><strong>QQ:</strong><a href="https://wpa.qq.com/msgrd?v=3&uin=<?php echo $conf['kfqq']?>&Site=pay&Menu=yes" target="_blank"><?php echo $conf['kfqq']?></a></li>

@@ -89,12 +89,12 @@ if (isset($islogin) && $islogin == 1) {
 
 			<div class="form-group">
 			<label>代理支付费率（0-100）:</label><br>
-			<input type="text" class="form-control" name="agent_pay_rate" value="" required>
+			<input type="text" class="form-control" name="agent_pay_rate" value="" required>%
 			</div>
 
 			<div class="form-group">
 			<label>代理提现费率（0-100）:</label><br>
-			<input type="text" class="form-control" name="agent_withdraw_rate" value="" required>
+			<input type="text" class="form-control" name="agent_withdraw_rate" value="" required>%
 			</div>
 
 			<div class="form-group">
@@ -216,12 +216,12 @@ if (isset($islogin) && $islogin == 1) {
 
 			<div class="form-group">
 			<label>代理支付费率（0-100）:</label><br>
-			<input type="text" class="form-control" name="agent_pay_rate" value="' . $row['agent_pay_rate'] . '" required>
+			<input type="text" class="form-control" name="agent_pay_rate" value="' . $row['agent_pay_rate'] . '" required>%
 			</div>
 
 			<div class="form-group">
 			<label>代理提现费率（0-100）:</label><br>
-			<input type="text" class="form-control" name="agent_withdraw_rate" value="' . $row['agent_withdraw_rate'] . '" required>
+			<input type="text" class="form-control" name="agent_withdraw_rate" value="' . $row['agent_withdraw_rate'] . '" required>%
 			</div>
 
 			<div class="form-group">
