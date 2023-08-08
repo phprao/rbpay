@@ -33,7 +33,7 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 						<li class="list-group-item">
 							<img src="<?php echo ($conf['kfqq']) ? '//q2.qlogo.cn/headimg_dl?bs=qq&dst_uin=' . $conf['kfqq'] . '&src_uin=' . $conf['kfqq'] . '&fid=' . $conf['kfqq'] . '&spec=100&url_enc=0&referer=bu_interface&term_type=PC' : '../assets/img/user.png' ?>" alt="avatar" class="img-circle img-thumbnail"></br>
 							<span class="text-muted"><strong>用户名：</strong>
-								<font color="blue"><?php echo $agentrow['agent_name'] ?></font>
+								<font color="blue"><?php echo $agentrow['name'] ?></font>
 							</span>
 						</li>
 						<li class="list-group-item"><a href="./set.php?mod=account" class="btn btn-xs btn-info">修改密码</a>&nbsp;<a href="./login.php?logout" class="btn btn-xs btn-danger">退出登录</a>
@@ -97,13 +97,11 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 				$('#usermoney').html(data.usermoney);
 
 				$("#paytype_list").empty();
-				$.each(data.paytype, function(k, v) {
-					$("#paytype_list").append('<tr><td>' + v.today + '</td><td>' + v.yestoday + '</td><td>' + v.thirthday + '</td></tr>');
-				});
+				$("#paytype_list").append('<tr><td>' + data.paytype.today + '</td><td>' + data.paytype.yestoday + '</td><td>' + data.paytype.thirthday + '</td></tr>');
 
 				$("#month_list").empty();
 				$.each(data.order_month, function(k, v) {
-					$("#month_list").append('<tr><td>' + v.month + '</td><td>' + v.withdrawmoney + '</td></tr>');
+					$("#month_list").append('<tr><td>' + v.month + '</td><td>' + v.getmoney + '</td><td>' + v.withdrawgetmoney + '</td></tr>');
 				});
 			}
 		});

@@ -6,7 +6,7 @@
 include("../includes/common.php");
 $title = '资金明细';
 include './head.php';
-if (isset($islogin_agent) && $islogin_agent == 1) {
+if (isset($islogin) && $islogin == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 ?>
 <div class="container" style="padding-top:70px;">
@@ -38,9 +38,9 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 		query = query || queryString;
 		if (query == 'start' || query == undefined) {
 			query = '';
-			history.replaceState({}, null, './record.php');
+			history.replaceState({}, null, './agent-record.php');
 		} else if (query != undefined) {
-			history.replaceState({}, null, './record.php?' + query);
+			history.replaceState({}, null, './agent-record.php?' + query);
 		}
 		layer.closeAll();
 		var ii = layer.load(2, {
@@ -48,7 +48,7 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 		});
 		$.ajax({
 			type: 'GET',
-			url: 'record-table.php?' + query,
+			url: 'agent-record-table.php?' + query,
 			dataType: 'html',
 			cache: false,
 			success: function(data) {

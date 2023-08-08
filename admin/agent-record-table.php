@@ -4,10 +4,10 @@
  * 收支明细
  **/
 include("../includes/common.php");
-if (isset($islogin_agent) && $islogin_agent == 1) {
+if (isset($islogin) && $islogin == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 
-$sql = " agent_id=$agent_id ";
+$sql = " 1 ";
 
 if (isset($_GET['value']) && !empty($_GET['value'])) {
 	$sql .= " AND `{$_GET['column']}`='{$_GET['value']}' ";

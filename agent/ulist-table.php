@@ -7,6 +7,15 @@ include("../includes/common.php");
 if (isset($islogin_agent) && $islogin_agent == 1) {
 } else exit("<script language='javascript'>window.location.href='./login.php';</script>");
 
+function display_status($status, $uid)
+{
+	if ($status == 1) {
+		return '<font color=green><i class="fa fa-check-circle"></i>正常</font>';
+	} else {
+		return '<font color=red><i class="fa fa-times-circle"></i>封禁</font>';
+	}
+}
+
 $sqls = " agent_id=$agent_id ";
 
 if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
@@ -51,12 +60,12 @@ if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
 			$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 			$offset = $pagesize * ($page - 1);
 
-			$rs = $DB->query("SELECT * FROM pre_user left join pre_agent on pre_user.agent_id = pre_agent.id WHERE {$sql} order by uid desc limit $offset,$pagesize");
+			$rs = $DB->query("SELECT * FROM pre_user WHERE {$sql} order by uid desc limit $offset,$pagesize");
 			while ($res = $rs->fetch()) {
 				$res['pay_rate'] = $res['pay_rate'] . '% / ' . $res['pay_rate_bank'] . '%';
 				$res['withdraw_rate'] = $res['withdraw_rate'] . '% / ' . $res['withdraw_rate_bank'] . '%';
 
-				echo '<tr><td><b>' . $res['uid'] . '</b>[<a href="javascript:showKey(' . $res['uid'] . ',\'' . $res['key'] . '\')">查看密钥</a>]<br/>' . $res['phone'] . '</td><td class="money">' . $res['money'] . '</td><td>' . $res['pay_rate'] . '<br/>代理费 ' . $res['agent_pay_rate'] . '</td><td>' . $res['withdraw_rate'] . '<br/>代理费 ' . $res['agent_withdraw_rate'] . '</td><td>' . $res['agent_name'] . ' | ' . $res['agent_id'] . '</td><td>' . $res['addtime'] . '</td></tr>';
+				echo '<tr><td><b>' . $res['uid'] . '</b><br/>' . $res['phone'] . '</td><td class="money">' . $res['money'] . '</td><td>' . $res['pay_rate'] . '<br/>代理费 ' . $res['agent_pay_rate'] . '</td><td>' . $res['withdraw_rate'] . '<br/>代理费 ' . $res['agent_withdraw_rate'] . '</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['uid']) . '</td></tr>';
 			}
 			?>
 		</tbody>

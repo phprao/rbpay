@@ -20,7 +20,7 @@ if ($mod == 'account_n' && $_POST['do'] == 'submit') {
 	$newpwd = trim($_POST['newpwd']);
 	$newpwd2 = trim($_POST['newpwd2']);
 	$md5pass = md5($oldpwd);
-	if ($md5pass != $agentrow['agent_pass']) {
+	if ($md5pass != $agentrow['pass']) {
 		showmsg('旧密码不正确！', 3);
 	}
 	if ($newpwd != $newpwd2 || empty($newpwd)) {
@@ -28,7 +28,7 @@ if ($mod == 'account_n' && $_POST['do'] == 'submit') {
 	}
 	$modpassnew = md5($newpwd);
 
-	$DB->exec("UPDATE pre_agent set agent_pass = '{$modpassnew}' where id = {$agent_id} limit 1");
+	$DB->exec("UPDATE pre_agent set pass = '{$modpassnew}' where id = {$agent_id} limit 1");
 
 	setcookie("agent_token", "", time() - 604800);
 
@@ -46,7 +46,7 @@ if ($mod == 'account_n' && $_POST['do'] == 'submit') {
 				<form action="./set.php?mod=account_n" method="post" class="form-horizontal" role="form"><input type="hidden" name="do" value="submit" />
 					<div class="form-group">
 						<label class="col-sm-2 control-label">用户名</label>
-						<div class="col-sm-10"><input type="text" disabled name="user" value="<?php echo $agentrow['agent_name']; ?>" class="form-control" required /></div>
+						<div class="col-sm-10"><input type="text" disabled name="user" value="<?php echo $agentrow['name']; ?>" class="form-control" required /></div>
 					</div><br />
 					<div class="form-group">
 						<label class="col-sm-2 control-label">旧密码</label>

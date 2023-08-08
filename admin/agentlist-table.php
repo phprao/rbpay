@@ -48,6 +48,7 @@ if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
 				<th>商户列表</th>
 				<th>添加时间</th>
 				<th>状态</th>
+				<th>操作</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -56,19 +57,28 @@ if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
 			$pages = ceil($numrows / $pagesize);
 			$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 			$offset = $pagesize * ($page - 1);
-
 			$rs = $DB->query("SELECT * FROM pre_agent WHERE {$sql} order by id desc limit $offset,$pagesize");
-			while ($res = $rs->fetch()) {
+			if ($rs) {
+				while ($res = $rs->fetch()) {
 
-				if (!$ismain) {
-					$showRecharge = '<b>' . $res['money'] . '</b>';
-				} else {
-					$showRecharge = '<b><a href="javascript:showRecharge(' . $res['id'] . ')">' . $res['money'] . '</a></b>';
+					if (!$ismain) {
+						$showRecharge = '<b>' . $res['money'] . '</b>';
+					} else {
+						$showRecharge = '<b><a href="javascript:showRecharge(' . $res['id'] . ')">' . $res['money'] . '</a></b>';
+					}
+
+					$rows = $DB->getAll("SELECT uid from pre_user WHERE agent_id={$res['id']}");
+					$userlist = '';
+					if (!empty($rows)) {
+						$c = [];
+						foreach ($rows as $v) {
+							array_push($c, $v['uid']);
+						}
+						$userlist = join(',', $c);
+					}
+
+					echo '<tr><td><b>' . $res['id'] . '</b><br/>' . $res['name'] . '</td><td class="money">' . $showRecharge . '</td><td>' . $userlist . '</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['id']) . '</td><td><a href="./agentset.php?my=edit&id=' . $res['id'] . '" class="btn btn-xs btn-info">编辑</a>&nbsp;<a href="./agent-record.php?column=agent_id&value=' . $res['id'] . '" target="_blank" class="btn btn-xs btn-default">明细</a></td></tr>';
 				}
-
-				$numrows = $DB->getColumn("SELECT count(*) from pre_user WHERE agent_id={$res['id']}");
-
-				echo '<tr><td><b>' . $res['id'] . '</b><br/>' . $res['agent_name'] . '</td><td class="money">' . $showRecharge . '</td><td>' . $numrows . '</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['id']) . '</td></tr>';
 			}
 			?>
 		</tbody>

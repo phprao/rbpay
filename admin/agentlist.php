@@ -70,7 +70,7 @@ if (isset($islogin) && $islogin == 1) {
 				<label>搜索</label>
 				<select name="column" class="form-control">
 					<option value="id">代理ID</option>
-					<option value="phone">代理名称</option>
+					<option value="name">代理名称</option>
 				</select>
 			</div>
 			<div class="form-group">

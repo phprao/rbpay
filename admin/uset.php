@@ -17,8 +17,8 @@ if (isset($islogin) && $islogin == 1) {
 		$channel = $DB->getAll("select id, CONCAT(name,' - ', appid) as name from pre_channel WHERE `status` = 1 order by id asc");
 		$channels = '';
 
-		$agents = $DB->getAll("select id, CONCAT(agent_name,' - ', id) as name from pre_agent WHERE `status` = 1 order by id asc");
-		$agents = '';
+		$agent = $DB->getAll("select id, CONCAT(name,' - ', id) as name from pre_agent WHERE `status` = 1 order by id asc");
+		$agents = '<option value="0">选择代理</option>';
 
 		if ($my == 'add') {
 			foreach ($channel as $k => $v) {

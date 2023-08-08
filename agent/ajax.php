@@ -13,7 +13,7 @@ switch ($act) {
 		$agent = $DB->getRow("select * from pre_agent where id = {$agent_id} limit 1");
 		$count1 = $DB->getColumn("SELECT count(*) from pre_order where status = 1 and agent_id = {$agent_id}");
 		$count2 = $DB->getColumn("SELECT count(*) from pre_user where status = 1 and agent_id = {$agent_id}");
-		$usermoney = $agent['agent_money'];
+		$usermoney = $agent['money'];
 
 		$today = date("Y-m-d"); // 今天
 		$yestoday = date("Y-m-d", strtotime("-1 day")); // 昨天
@@ -63,25 +63,25 @@ switch ($act) {
 		$result['order_month'][0]['month'] = date('Y-m');
 		$thismonthstart = date('Y-m-01 00:00:00');
 		$thismonthend = date('Y-m-d 23:59:59');
-		$re1 = $DB->getRow("SELECT SUM(agent_getmoney) as money from pre_order where status = 1 and agent_id = {$agent_id} and addtime >= '{$thismonthstart}' and addtime <= '{$thismonthend}'");
+		$re1 = $DB->getRow("SELECT SUM(agent_getmoney) as getmoney from pre_order where status = 1 and agent_id = {$agent_id} and addtime >= '{$thismonthstart}' and addtime <= '{$thismonthend}'");
 		if (!empty($re1)) {
-			$result['order_month'][0]['money'] = sprintf("%.2f", $re1['money']);
+			$result['order_month'][0]['getmoney'] = sprintf("%.2f", $re1['getmoney']);
 		}
-		$re2 = $DB->getRow("SELECT SUM(agent_getmoney) as withdrawmoney from pre_withdraw_order where status in (1, 4) and agent_id = {$agent_id} and addtime >= '{$thismonthstart}' and addtime <= '{$thismonthend}'");
+		$re2 = $DB->getRow("SELECT SUM(agent_getmoney) as withdrawgetmoney from pre_withdraw_order where status in (1, 4) and agent_id = {$agent_id} and addtime >= '{$thismonthstart}' and addtime <= '{$thismonthend}'");
 		if (!empty($re2)) {
-			$result['order_month'][0]['withdrawmoney'] = sprintf("%.2f", $re2['withdrawmoney']);
+			$result['order_month'][0]['withdrawgetmoney'] = sprintf("%.2f", $re2['withdrawgetmoney']);
 		}
 
 		// 上月
 		$result['order_month'][1]['month'] = date('Y-m', strtotime('-1 month'));
 		$lastmonthstart = date('Y-m-01 00:00:00', strtotime('-1 month'));
-		$re3 = $DB->getRow("SELECT SUM(agent_getmoney) as money from pre_order where status = 1 and agent_id = {$agent_id} and addtime >= '{$lastmonthstart}' and addtime < '{$thismonthstart}'");
+		$re3 = $DB->getRow("SELECT SUM(agent_getmoney) as getmoney from pre_order where status = 1 and agent_id = {$agent_id} and addtime >= '{$lastmonthstart}' and addtime < '{$thismonthstart}'");
 		if (!empty($re3)) {
-			$result['order_month'][1]['money'] = sprintf("%.2f", $re3['money']);
+			$result['order_month'][1]['getmoney'] = sprintf("%.2f", $re3['getmoney']);
 		}
-		$re4 = $DB->getRow("SELECT SUM(agent_getmoney) as withdrawmoney from pre_withdraw_order where status in (1, 4) and agent_id = {$agent_id} and addtime >= '{$lastmonthstart}' and addtime < '{$thismonthstart}'");
+		$re4 = $DB->getRow("SELECT SUM(agent_getmoney) as withdrawgetmoney from pre_withdraw_order where status in (1, 4) and agent_id = {$agent_id} and addtime >= '{$lastmonthstart}' and addtime < '{$thismonthstart}'");
 		if (!empty($re4)) {
-			$result['order_month'][1]['withdrawmoney'] = sprintf("%.2f", $re4['withdrawmoney']);
+			$result['order_month'][1]['withdrawgetmoney'] = sprintf("%.2f", $re4['withdrawgetmoney']);
 		}
 
 		exit(json_encode($result));

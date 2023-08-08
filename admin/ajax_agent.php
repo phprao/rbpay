@@ -12,7 +12,7 @@ switch ($act) {
 	case 'setAgent':
 		$id = intval($_GET['id']);
 		$status = intval($_GET['status']);
-		$sql = "UPDATE pre_agent SET agent_status='$status' WHERE id='$id'";
+		$sql = "UPDATE pre_agent SET status='$status' WHERE id='$id'";
 		if ($DB->exec($sql) !== false) exit('{"code":0,"msg":"修改成功！"}');
 		else exit('{"code":-1,"msg":"修改失败[' . $DB->error() . ']"}');
 		break;
@@ -24,7 +24,7 @@ switch ($act) {
 		if (!$row)
 			exit('{"code":-1,"msg":"当前用户不存在！"}');
 		if ($do == 1) {
-			if ($rmb > $row['agent_money']) exit('{"code":-1,"msg":"余额不足！"}');
+			if ($rmb > $row['money']) exit('{"code":-1,"msg":"余额不足！"}');
 
 			changeAgentMoney($id, $rmb, RECORD_ACTION_DEC, RECORD_TYPE_DLTX);
 		}

@@ -45,9 +45,9 @@ if (isset($islogin_agent) && $islogin_agent == 1) {
 		</div>
 		<div class="form-group">
 			<select name="dstatus" id="dstatus" class="form-control">
-				<option value="0">全部用户</option>
-				<option value="status_1">用户状态正常</option>
-				<option value="status_0">用户状态封禁</option>
+				<option value="0">全部商户</option>
+				<option value="status_1">商户状态正常</option>
+				<option value="status_0">商户状态封禁</option>
 				<option value="pay_1">支付状态正常</option>
 				<option value="pay_0">支付状态关闭</option>
 				<option value="withdraw_1">提现状态正常</option>

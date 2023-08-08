@@ -1474,9 +1474,9 @@ function changeAgentMoney($agent_id, $money, $action, $type)
 		$DB->beginTransaction();
 
 		if ($action == RECORD_ACTION_INC) {
-			$re = $DB->exec("update pre_agent set agent_money = agent_money + {$money} where id = {$agent_id} limit 1");
+			$re = $DB->exec("update pre_agent set money = money + {$money} where id = {$agent_id} limit 1");
 		} else {
-			$re = $DB->exec("update pre_agent set agent_money = agent_money - {$money} where id = {$agent_id} limit 1");
+			$re = $DB->exec("update pre_agent set money = money - {$money} where id = {$agent_id} limit 1");
 		}
 		if ($re === false) {
 			throw new Exception("修改代理余额失败");
@@ -1484,12 +1484,12 @@ function changeAgentMoney($agent_id, $money, $action, $type)
 
 		// 记录
 		if ($action == RECORD_ACTION_INC) {
-			$newmoney = $agent['agent_money'] + $money;
+			$newmoney = $agent['money'] + $money;
 		} else {
-			$newmoney = $agent['agent_money'] - $money;
+			$newmoney = $agent['money'] - $money;
 		}
 
-		$re = $DB->exec("INSERT INTO `pre_agent_record` (`agent_id`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `date`) VALUES (:agent_id, " . $action . ", :money, :oldmoney, :newmoney, '" . $type . "', NOW())", [':agent_id' => $agent_id, ':money' => $money, ':oldmoney' => $agent['agent_money'], ':newmoney' => $newmoney]);
+		$re = $DB->exec("INSERT INTO `pre_agent_record` (`agent_id`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `date`) VALUES (:agent_id, " . $action . ", :money, :oldmoney, :newmoney, '" . $type . "', NOW())", [':agent_id' => $agent_id, ':money' => $money, ':oldmoney' => $agent['money'], ':newmoney' => $newmoney]);
 		if ($re === false) {
 			throw new Exception("添加代理余额变动记录失败");
 		}
@@ -1507,13 +1507,13 @@ function updateAgentAndRecord($agent, $order, $action, $type)
 {
 	global $DB;
 
-	if ($agent['agent_status'] == 1 && $order['agent_getmoney'] > 0) {
+	if ($agent['status'] == 1 && $order['agent_getmoney'] > 0) {
 		$agent_getmoney = $order['agent_getmoney'];
 		$agent_id = $order['agent_id'];
 		if ($action == RECORD_ACTION_INC) {
-			$re = $DB->exec("update pre_agent set agent_money = agent_money + {$agent_getmoney} where id = {$agent_id} limit 1");
+			$re = $DB->exec("update pre_agent set money = money + {$agent_getmoney} where id = {$agent_id} limit 1");
 		} else {
-			$re = $DB->exec("update pre_agent set agent_money = agent_money - {$agent_getmoney} where id = {$agent_id} limit 1");
+			$re = $DB->exec("update pre_agent set money = money - {$agent_getmoney} where id = {$agent_id} limit 1");
 		}
 		if ($re === false) {
 			throw new Exception("修改代理余额失败");
@@ -1521,12 +1521,12 @@ function updateAgentAndRecord($agent, $order, $action, $type)
 
 		// 记录
 		if ($action == RECORD_ACTION_INC) {
-			$newmoney = $agent['agent_money'] + $agent_getmoney;
+			$newmoney = $agent['money'] + $agent_getmoney;
 		} else {
-			$newmoney = $agent['agent_money'] - $agent_getmoney;
+			$newmoney = $agent['money'] - $agent_getmoney;
 		}
 
-		$re = $DB->exec("INSERT INTO `pre_agent_record` (`agent_id`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:agent_id, " . $action . ", :money, :oldmoney, :newmoney, '" . $type . "', :trade_no, NOW())", [':agent_id' => $agent_id, ':money' => $agent_getmoney, ':oldmoney' => $agent['agent_money'], ':newmoney' => $newmoney, ':trade_no' => $order['trade_no']]);
+		$re = $DB->exec("INSERT INTO `pre_agent_record` (`agent_id`, `action`, `money`, `oldmoney`, `newmoney`, `type`, `trade_no`, `date`) VALUES (:agent_id, " . $action . ", :money, :oldmoney, :newmoney, '" . $type . "', :trade_no, NOW())", [':agent_id' => $agent_id, ':money' => $agent_getmoney, ':oldmoney' => $agent['money'], ':newmoney' => $newmoney, ':trade_no' => $order['trade_no']]);
 		if ($re === false) {
 			throw new Exception("添加代理余额变动记录失败");
 		}
