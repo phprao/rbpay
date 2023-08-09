@@ -77,7 +77,7 @@ if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
 			$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
 			$offset = $pagesize * ($page - 1);
 
-			$rs = $DB->query("SELECT * FROM pre_user left join pre_agent on pre_user.agent_id = pre_agent.id WHERE{$sql} order by uid desc limit $offset,$pagesize");
+			$rs = $DB->query("SELECT * FROM pre_user WHERE{$sql} order by uid desc limit $offset,$pagesize");
 			while ($res = $rs->fetch()) {
 				$chan = $res['pay_channel'];
 				$chanarr = [];
@@ -99,6 +99,10 @@ if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
 				$res['pay_rate'] = $res['pay_rate'] . '% / ' . $res['pay_rate_bank'] . '%';
 				$res['withdraw_rate'] = $res['withdraw_rate'] . '% / ' . $res['withdraw_rate_bank'] . '%';
 
+				if ($res['agent_id'] > 0) {
+					$res['name'] = $DB->getColumn("SELECT name FROM pre_agent where id = {$res['agent_id']} limit 1");
+				}
+
 				if (!$ismain) {
 					$res['pay_rate'] = '--';
 					$res['withdraw_rate'] = '--';
@@ -109,7 +113,7 @@ if (isset($_GET['dstatus']) && $_GET['dstatus'] != '0') {
 					$denglu = '<a href="./sso.php?uid=' . $res['uid'] . '" target="_blank" class="btn btn-xs btn-success">登录</a>&nbsp;<a href="./uset.php?my=delete&uid=' . $res['uid'] . '" class="btn btn-xs btn-danger" onclick="return confirm(\'你确实要删除此商户吗？\');">删除</a>';
 				}
 
-				echo '<tr><td><b>' . $res['uid'] . '</b>[<a href="javascript:showKey(' . $res['uid'] . ',\'' . $res['key'] . '\')">查看密钥</a>]<br/>' . $res['phone'] . '</td><td class="money">' . $showRecharge . '</td><td>' . $res['pay_rate'] . '<br/>代理佣金 ' . $res['agent_pay_rate'] . '%</td><td>' . $res['withdraw_rate']. '<br/>代理佣金 ' . $res['agent_withdraw_rate'] . '%</td><td>' . $res['pay_channel'] . '</td><td>' . $res['name'] . ' | ' . $res['agent_id'] . '</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['uid']) . '&nbsp;' . '<br/>' . display_paystatus($res['pay'], $res['uid']) . '&nbsp;' . display_withdrawstatus($res['withdraw'], $res['uid']) . '</td><td><a href="./uset.php?my=edit&uid=' . $res['uid'] . '" class="btn btn-xs btn-info">编辑</a>&nbsp;' . $denglu . '<br/><a href="./order.php?uid=' . $res['uid'] . '" target="_blank" class="btn btn-xs btn-default">订单</a>&nbsp;<a href="./withdraw.php?column=uid&value=' . $res['uid'] . '" target="_blank" class="btn btn-xs btn-default">提现</a>&nbsp;<a href="./record.php?column=uid&value=' . $res['uid'] . '" target="_blank" class="btn btn-xs btn-default">明细</a></td></tr>';
+				echo '<tr><td><b>' . $res['uid'] . '</b>[<a href="javascript:showKey(' . $res['uid'] . ',\'' . $res['key'] . '\')">查看密钥</a>]<br/>' . $res['phone'] . '</td><td class="money">' . $showRecharge . '</td><td>' . $res['pay_rate'] . '<br/>代理佣金 ' . $res['agent_pay_rate'] . '%</td><td>' . $res['withdraw_rate'] . '<br/>代理佣金 ' . $res['agent_withdraw_rate'] . '%</td><td>' . $res['pay_channel'] . '</td><td>' . $res['name'] . ' | ' . $res['agent_id'] . '</td><td>' . $res['addtime'] . '</td><td>' . display_status($res['status'], $res['uid']) . '&nbsp;' . '<br/>' . display_paystatus($res['pay'], $res['uid']) . '&nbsp;' . display_withdrawstatus($res['withdraw'], $res['uid']) . '</td><td><a href="./uset.php?my=edit&uid=' . $res['uid'] . '" class="btn btn-xs btn-info">编辑</a>&nbsp;' . $denglu . '<br/><a href="./order.php?uid=' . $res['uid'] . '" target="_blank" class="btn btn-xs btn-default">订单</a>&nbsp;<a href="./withdraw.php?column=uid&value=' . $res['uid'] . '" target="_blank" class="btn btn-xs btn-default">提现</a>&nbsp;<a href="./record.php?column=uid&value=' . $res['uid'] . '" target="_blank" class="btn btn-xs btn-default">明细</a></td></tr>';
 			}
 			?>
 		</tbody>
