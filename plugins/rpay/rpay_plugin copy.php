@@ -38,7 +38,7 @@ class rpay_plugin
 			'cardowner' => $channel['appkey'],
 			'channel_type' => $channel['channel_type'],
 			'bank_code' => $channel['bank_code'],
-			'order_timeout' => $conf['config_order_timeout']+86400,
+			'order_timeout' => $conf['config_order_timeout'],
 			'order_timeout_text' => '5m 0s',
 		);
 
@@ -71,29 +71,35 @@ class rpay_plugin
 
 				.copy-account {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #009649;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				.copy-name {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #028EF9;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				.copy-code {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #d902f9;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				#clocker {
@@ -112,31 +118,25 @@ class rpay_plugin
 
 		<body style="background-color: #FDF0F9;">
 			<div class="order">
-				<div style="padding-top: 15px;">
-					<h2>请使用【%s】支付</h2>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left">订单号：</span><span>%s</span>
-					</p>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left">账&nbsp;&nbsp;&nbsp;户：</span><span>%s</span>
-						<span data-clipboard-text="%s" class="copy-account">复制</span>
-					</p>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left">账户名：</span><span>%s</span>
-						<span data-clipboard-text="%s" class="copy-name">复制</span>
-					</p>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left copy-code-text">银行编码：</span><span>%s</span>
-						<span data-clipboard-text="%s" class="copy-code">复制</span>
-					</p>
-				</div>
-				<h1 style="text-align: center; font-size: 3rem; padding-top: 50px;padding-bottom: 50px;">HK$ %.2f</h1>
 				<h2>支付前请您仔细阅读</h2>
 				<div style="color: #3a3535;">
 					<p>1、请按实际金额 <span style="color: #c51010;">HK$ %.2f</span> 支付，不能修改金额，否则可能导致资金不到账或延迟到账。</p>
 					<p>2、<span id="clocker">%s</span> 前完成支付，超过时间订单将会失效，强行支付会导致资金无法找回或延迟到账。</p>
 					<p>3、完成支付后，请耐心等待到账。</p>
 				</div>
+				<div style="padding: 10px;background-color: #FCF7FE;">
+					<h1 style="text-align: center; font-size: 3rem; margin: 60px 0;">HK$ %.2f</h1>
+					<div style="margin-left: 20px; border-top: 2px solid #ddd; padding-top: 15px;">
+						<p>请使用【%s】支付</p>
+						<p style="margin: 5px 0;"><span class="list-left">订单号：</span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left">账&nbsp;&nbsp;&nbsp;户：</span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left">账户名：</span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left copy-code-text">银行编码：</span><span>%s</span></p>
+					</div>
+				</div>
+				<p style="text-align: center; margin-top: 30px;"><span data-clipboard-text="%s" class="copy-account">复制账号</span></p>
+				<p style="text-align: center;"><span data-clipboard-text="%s" class="copy-name">复制账户名</span></p>
+				<p style="text-align: center;"><span data-clipboard-text="%s" class="copy-code">复制银行编码</span></p>
 			</div>
 			<div class="success">
 				<div style="text-align: center;padding: 60px 0;">
@@ -239,29 +239,35 @@ class rpay_plugin
 
 				.copy-account {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #009649;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				.copy-name {
-					ddisplay: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					display: inline-block;
+					width: 190px;
+					background-color: #028EF9;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				.copy-code {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #d902f9;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				#clocker {
@@ -280,33 +286,25 @@ class rpay_plugin
 
 		<body style="background-color: #FDF0F9;">
 			<div class="order">
-				<div style="background-color: #FCF7FE;">
-					<div style="padding-top: 15px;">
-						<h2>請使用【%s】支付</h2>
-						<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-							<span class="list-left">訂單號：</span><span>%s</span>
-						</p>
-						<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-							<span class="list-left">帳&nbsp;&nbsp;&nbsp;戶：</span><span>%s</span>
-							<span data-clipboard-text="%s" class="copy-account">複製</span>
-						</p>
-						<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-							<span class="list-left">帳戶名：</span><span>%s</span>
-							<span data-clipboard-text="%s" class="copy-name">複製</span>
-						</p>
-						<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-							<span class="list-left copy-code-text">銀行編碼：</span><span>%s</span>
-							<span data-clipboard-text="%s" class="copy-code">複製</span>
-						</p>
-					</div>
-					<h1 style="text-align: center; font-size: 3rem; padding-top: 50px;padding-bottom: 50px;">HK$ %.2f</h1>
-				</div>
 				<h2>支付前請您仔細閱讀</h2>
 				<div style="color: #3a3535;">
 					<p>1、請按實際金額 <span style="color: #c51010;">HK$ %.2f</span> 支付，不能修改金額，否則可能導致資金不到賬或延遲到賬。</p>
 					<p>2、<span id="clocker">%s</span> 前完成支付，超過時間訂單將會失效，強行支付會導致資金無法找回或延遲到賬。</p>
 					<p>3、完成支付后，請耐心等待到賬。</p>
 				</div>
+				<div style="padding: 10px;background-color: #FCF7FE;">
+					<h1 style="text-align: center; font-size: 3rem; margin: 60px 0;">HK$ %.2f</h1>
+					<div style="margin-left: 20px; border-top: 2px solid #ddd; padding-top: 15px;">
+						<p>請使用【%s】支付</p>
+						<p style="margin: 5px 0;"><span class="list-left">訂單號：</span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left">帳&nbsp;&nbsp;&nbsp;戶：</span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left">帳戶名：</span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left copy-code-text">銀行編碼：</span><span>%s</span></p>
+					</div>
+				</div>
+				<p style="text-align: center; margin-top: 30px;"><span data-clipboard-text="%s" class="copy-account">複製帳號</span></p>
+				<p style="text-align: center;"><span data-clipboard-text="%s" class="copy-name">複製帳戶名</span></p>
+				<p style="text-align: center;"><span data-clipboard-text="%s" class="copy-code">複製銀行編碼</span></p>
 			</div>
 			<div class="success">
 				<div style="text-align: center;padding: 60px 0;">
@@ -409,29 +407,35 @@ class rpay_plugin
 
 				.copy-account {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #009649;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				.copy-name {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #028EF9;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				.copy-code {
 					display: inline-block;
-					width: 50px;
-					color: #028EF9;
-					font-size: 1rem;
-					text-align: center;
-					float: right;
+					width: 190px;
+					background-color: #d902f9;
+					padding-top: 10px;
+					padding-bottom: 10px;
+					border-radius: 6px;
+					color: #eee;
+					font-size: 1.2rem;
 				}
 
 				#clocker {
@@ -450,31 +454,25 @@ class rpay_plugin
 
 		<body style="background-color: #FDF0F9;">
 			<div class="order">
-				<div style="padding-top: 15px;">
-					<h2>Please use 【%s】to pay</h2>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left">Order number：</span><span>%s</span>
-					</p>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left">Account：</span><span>%s</span>
-						<span data-clipboard-text="%s" class="copy-account">Copy</span>
-					</p>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left">Account name：</span><span>%s</span>
-						<span data-clipboard-text="%s" class="copy-name">Copy</span>
-					</p>
-					<p style="padding-top: 10px;padding-bottom: 10px;border-bottom: 1px solid #777;">
-						<span class="list-left copy-code-text">Bank code：</span><span>%s</span>
-						<span data-clipboard-text="%s" class="copy-code">Copy</span>
-					</p>
-				</div>
-				<h1 style="text-align: center; font-size: 3rem; padding-top: 50px;padding-bottom: 50px;">HK$ %.2f</h1>
 				<h2>Please read carefully before make the payment</h2>
 				<div style="color: #3a3535;">
 					<p>1. Please pay the actual amount of <span style="color: #c51010;">HK$ %.2f</span>. The amount cannot be modified, otherwise the funds may not be credited or delayed.</p>
 					<p>2. make payment before <span id="clocker">%s</span>, and the order will be invalid after the time limit. Forcible payment will cause the funds to be unable to be retrieved or delayed to the account.</p>
 					<p>3. After completing the payment, please wait patiently for the account to arrive.</p>
 				</div>
+				<div style="padding: 10px;background-color: #FCF7FE;">
+					<h1 style="text-align: center; font-size: 3rem; margin: 60px 0;">HK$ %.2f</h1>
+					<div style="margin-left: 20px; border-top: 2px solid #ddd; padding-top: 15px;">
+						<p>Please use 【%s】to pay</p>
+						<p style="margin: 5px 0;"><span class="list-left">Order number: </span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left">Account: </span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left">Account name: </span><span>%s</span></p>
+						<p style="margin: 5px 0;"><span class="list-left copy-code-text">Bank code: </span><span>%s</span></p>
+					</div>
+				</div>
+				<p style="text-align: center; margin-top: 30px;"><span data-clipboard-text="%s" class="copy-account">Copy account</span></p>
+				<p style="text-align: center;"><span data-clipboard-text="%s" class="copy-name">Copy account name</span></p>
+				<p style="text-align: center;"><span data-clipboard-text="%s" class="copy-code">Copy bank code</span></p>
 			</div>
 			<div class="success">
 				<div style="text-align: center;padding: 60px 0;">
@@ -581,17 +579,17 @@ class rpay_plugin
 
 		return sprintf(
 			$sel,
+			$parameter['money'],
+			$parameter['order_timeout_text'],
+			$parameter['money'],
 			$channeltype[$lang],
 			$parameter['trade_no'],
 			$parameter['cardno'],
+			$parameter['cardowner'],
+			$parameter['bank_code'],
 			$parameter['cardno'],
 			$parameter['cardowner'],
-			$parameter['cardowner'],
 			$parameter['bank_code'],
-			$parameter['bank_code'],
-			$parameter['money'],
-			$parameter['money'],
-			$parameter['order_timeout_text'],
 			$parameter['money'],
 			$parameter['money'],
 			$parameter['money'],
