@@ -181,6 +181,18 @@ switch ($act) {
 		if ($DB->exec($sql)) exit('{"code":0,"msg":"删除公告成功！"}');
 		else exit('{"code":-1,"msg":"删除公告失败[' . $DB->error() . ']"}');
 		break;
+	case 'checkspeck':
+		$result = [
+			'code' => 0,
+			'data' => [
+				'tkcount' => 0,
+			]
+		];
+
+		$numrows = $DB->getColumn("SELECT count(*) from pre_withdraw_order WHERE `status` = 0");
+		$result['data']['tkcount'] = intval($numrows);
+
+		exit(json_encode($result));
 	default:
 		exit('{"code":-4,"msg":"No Act"}');
 		break;

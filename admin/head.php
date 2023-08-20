@@ -22,6 +22,60 @@ $cdnpublic = '//cdn.staticfile.org/';
     <script src="<?php echo $cdnpublic ?>html5shiv/3.7.3/html5shiv.min.js"></script>
     <script src="<?php echo $cdnpublic ?>respond.js/1.4.2/respond.min.js"></script>
   <![endif]-->
+  <script>
+    $(document).ready(function() {
+      console.log('xxxxxxxxxx');
+      loadAudioSource();
+    });
+
+    function loadAudioSource() {
+      var audioHtml = '<div>';
+      audioHtml += '<audio controls id="audiotikuan" style="display:none;"><source src="../assets/audio/tikuan.mp3" type="audio/mpeg"></audio>';
+      audioHtml += '<audio controls id="audiochongzhi" style="display:none;"><source src="../assets/audio/chongzhi.mp3" type="audio/mpeg"></audio>';
+      audioHtml += '<audio controls id="audiobankbind" style="display:none;"><source src="../assets/audio/bankbind.mp3" type="audio/mpeg"></audio>';
+      audioHtml += '</div>';
+
+      $("body").append(audioHtml);
+    }
+
+    // 播放提示声音
+    function audioPlay(name, type) {
+      var audio = document.getElementById("audio" + name);
+      if (!audio) {
+        setTimeout(function() {
+          audioPlay(name, type);
+        }, 50);
+        return false;
+      }
+
+      if (type == 1) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
+    }
+
+    function checkspeck() {
+      $.ajax({
+        type: 'GET',
+        url: 'ajax.php?act=checkspeck',
+        dataType: 'json',
+        cache: false,
+        success: function(data) {
+          if (data.data.tkcount > 0) {
+            audioPlay('tikuan', 1);
+          } else {
+            audioPlay('tikuan', 2);
+          }
+        },
+        error: function(data) {
+
+        }
+      });
+    }
+
+    window.setInterval("checkspeck()", 3000);
+  </script>
 </head>
 
 <body>
