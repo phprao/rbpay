@@ -24,7 +24,6 @@ $cdnpublic = '//cdn.staticfile.org/';
   <![endif]-->
   <script>
     $(document).ready(function() {
-      console.log('xxxxxxxxxx');
       loadAudioSource();
     });
 
