@@ -96,6 +96,13 @@ class CronFunc
         $re = $DB->exec("UPDATE pre_anounce set `sort` = 3");
         var_dump($re);
     }
+
+    public function testSha1()
+    {
+        $str = 'raoxiaoya';
+        var_dump(md5($str));
+        var_dump(sha1($str));
+    }
 }
 
 $o = new CronFunc();

@@ -14,9 +14,9 @@ $is_defend = true;
 $nosession = true;
 require '../includes/common.php';
 
-if (isset($_GET['pid'])) {
+if (isset($_GET['uid'])) {
 	$queryArr = $_GET;
-} elseif (isset($_POST['pid'])) {
+} elseif (isset($_POST['uid'])) {
 	$queryArr = $_POST;
 } else {
 	sysmsg('参数错误！');
@@ -24,28 +24,28 @@ if (isset($_GET['pid'])) {
 
 addLog("[下单]" . json_encode($queryArr, 320));
 
-if (!isset($queryArr['type']) || !in_array($queryArr['type'], ['charge', 'bank_card'])) {
-	sysmsg('type参数错误');
+if (!isset($queryArr['pay_type']) || !in_array($queryArr['pay_type'], ['charge', 'bank_card'])) {
+	sysmsg('pay_type参数错误');
 }
-$payChannelType = $queryArr['type'];
+$payChannelType = $queryArr['pay_type'];
 
 $typeInfo = $DB->getRow("SELECT * FROM pre_type where `name` = 'charge' limit 1");
 
 if (!isset($queryArr['sign'])) {
 	sysmsg('缺少参数sign');
 }
-if (!isset($queryArr['sign_type']) || $queryArr['sign_type'] != 'MD5') {
+if (!isset($queryArr['sign_type']) || $queryArr['sign_type'] != 'SHA1') {
 	sysmsg('缺少参数sign_type');
 }
 
 use \lib\PayUtils;
 
 $prestr = PayUtils::createLinkstring(PayUtils::argSort(PayUtils::paraFilter($queryArr)));
-$pid = intval($queryArr['pid']);
-if (empty($pid)) sysmsg('PID不存在');
-$userrow = $DB->getRow("SELECT * FROM `pre_user` WHERE `uid`='{$pid}' LIMIT 1");
+$uid = intval($queryArr['uid']);
+if (empty($uid)) sysmsg('uid不存在');
+$userrow = $DB->getRow("SELECT * FROM `pre_user` WHERE `uid`='{$uid}' LIMIT 1");
 if (!$userrow) sysmsg('商户不存在！');
-if (!PayUtils::md5Verify($prestr, $queryArr['sign'], $userrow['key'])) sysmsg('签名校验失败，请返回重试！');
+if (!PayUtils::sha1Verify($prestr, $queryArr['sign'], $userrow['key'])) sysmsg('签名校验失败，请返回重试！');
 
 if ($userrow['status'] == 0 || $userrow['pay'] == 0) sysmsg('商户已封禁，无法支付！');
 
@@ -72,7 +72,7 @@ if (intval($money) < $userrow['pay_min'] || intval($money) > $userrow['pay_max']
 }
 
 // 校验重复的订单号
-$log = $DB->getRow("SELECT trade_no FROM pre_order WHERE `uid` = :uid AND `out_trade_no` = :out_trade_no LIMIT 1", [':uid' => $pid, ':out_trade_no' => $out_trade_no]);
+$log = $DB->getRow("SELECT trade_no FROM pre_order WHERE `uid` = :uid AND `out_trade_no` = :out_trade_no LIMIT 1", [':uid' => $uid, ':out_trade_no' => $out_trade_no]);
 if (!empty($log)) {
 	sysmsg('商户订单号重复');
 }
@@ -105,7 +105,7 @@ if ($channelId) {
 	$agent_getmoney = $getmoney * $userrow['agent_pay_rate'] / 100;
 
 	$trade_no = 'P' . date("YmdHis") . rand(11111, 99999);
-	if (!$DB->exec("INSERT INTO `pre_order` (`trade_no`,`out_trade_no`,`uid`,`addtime`,`date`,`name`,`money`,`notify_url`,`param`,`domain`,`ip`,`status`, `type`, `channel`, `realmoney`, `getmoney`, `agent_id`, `agent_pay_rate`, `agent_getmoney`) VALUES (:trade_no, :out_trade_no, :uid, NOW(), CURDATE(), :name, :money, :notify_url, :param, :domain, :clientip, 0, :type, :channel, :realmoney, :getmoney, :agent_id, :agent_pay_rate, :agent_getmoney)", [':trade_no' => $trade_no, ':out_trade_no' => $out_trade_no, ':uid' => $pid, ':name' => $name, ':money' => $money, ':notify_url' => $notify_url, ':param' => $param, ':domain' => $domain, ':clientip' => $clientip, ':type' => $typeInfo['id'], ':channel' => $channelId, ':realmoney' => $realmoney,':getmoney' => $getmoney, ':agent_id' => $userrow['agent_id'], ':agent_pay_rate' => $userrow['agent_pay_rate'], ':agent_getmoney' => $agent_getmoney])) {
+	if (!$DB->exec("INSERT INTO `pre_order` (`trade_no`,`out_trade_no`,`uid`,`addtime`,`date`,`name`,`money`,`notify_url`,`param`,`domain`,`ip`,`status`, `type`, `channel`, `realmoney`, `getmoney`, `agent_id`, `agent_pay_rate`, `agent_getmoney`) VALUES (:trade_no, :out_trade_no, :uid, NOW(), CURDATE(), :name, :money, :notify_url, :param, :domain, :clientip, 0, :type, :channel, :realmoney, :getmoney, :agent_id, :agent_pay_rate, :agent_getmoney)", [':trade_no' => $trade_no, ':out_trade_no' => $out_trade_no, ':uid' => $uid, ':name' => $name, ':money' => $money, ':notify_url' => $notify_url, ':param' => $param, ':domain' => $domain, ':clientip' => $clientip, ':type' => $typeInfo['id'], ':channel' => $channelId, ':realmoney' => $realmoney, ':getmoney' => $getmoney, ':agent_id' => $userrow['agent_id'], ':agent_pay_rate' => $userrow['agent_pay_rate'], ':agent_getmoney' => $agent_getmoney])) {
 		sysmsg('商户订单号重复');
 	}
 } else {
@@ -115,7 +115,7 @@ if ($channelId) {
 
 $order['trade_no'] = $trade_no;
 $order['out_trade_no'] = $out_trade_no;
-$order['uid'] = $pid;
+$order['uid'] = $uid;
 $order['addtime'] = $date;
 $order['name'] = $name;
 $order['realmoney'] = $realmoney;

@@ -1,20 +1,23 @@
 <?php
+
 namespace lib;
 
-class PayUtils {
+class PayUtils
+{
 
 	/**
 	 * 把数组所有元素，按照“参数=参数值”的模式用“&”字符拼接成字符串
 	 * @param $para 需要拼接的数组
 	 * return 拼接完成以后的字符串
 	 */
-	static public function createLinkstring($para) {
+	static public function createLinkstring($para)
+	{
 		$arg  = "";
-		foreach ($para as $key=>$val) {
-			$arg.=$key."=".$val."&";
+		foreach ($para as $key => $val) {
+			$arg .= $key . "=" . $val . "&";
 		}
 		//去掉最后一个&字符
-		$arg = substr($arg,0,-1);
+		$arg = substr($arg, 0, -1);
 
 		return $arg;
 	}
@@ -23,13 +26,14 @@ class PayUtils {
 	 * @param $para 需要拼接的数组
 	 * return 拼接完成以后的字符串
 	 */
-	static public function createLinkstringUrlencode($para) {
+	static public function createLinkstringUrlencode($para)
+	{
 		$arg  = "";
-		foreach ($para as $key=>$val) {
-			$arg.=$key."=".urlencode($val)."&";
+		foreach ($para as $key => $val) {
+			$arg .= $key . "=" . urlencode($val) . "&";
 		}
 		//去掉最后一个&字符
-		$arg = substr($arg,0,-1);
+		$arg = substr($arg, 0, -1);
 
 		return $arg;
 	}
@@ -38,10 +42,11 @@ class PayUtils {
 	 * @param $para 签名参数组
 	 * return 去掉空值与签名参数后的新签名参数组
 	 */
-	static public function paraFilter($para) {
+	static public function paraFilter($para)
+	{
 		$para_filter = array();
-		foreach ($para as $key=>$val) {
-			if($key == "sign" || $key == "sign_type" || $val == "")continue;
+		foreach ($para as $key => $val) {
+			if ($key == "sign" || $key == "sign_type" || $val == "") continue;
 			else $para_filter[$key] = $para[$key];
 		}
 		return $para_filter;
@@ -51,7 +56,8 @@ class PayUtils {
 	 * @param $para 排序前的数组
 	 * return 排序后的数组
 	 */
-	static public function argSort($para) {
+	static public function argSort($para)
+	{
 		ksort($para);
 		reset($para);
 		return $para;
@@ -62,7 +68,8 @@ class PayUtils {
 	 * @param $key 私钥
 	 * return 签名结果
 	 */
-	static public function md5Sign($prestr, $key) {
+	static public function md5Sign($prestr, $key)
+	{
 		$prestr = $prestr . $key;
 		return md5($prestr);
 	}
@@ -74,14 +81,32 @@ class PayUtils {
 	 * @param $key 私钥
 	 * return 签名结果
 	 */
-	static public function md5Verify($prestr, $sign, $key) {
+	static public function md5Verify($prestr, $sign, $key)
+	{
 		$prestr = $prestr . $key;
 		$mysgin = md5($prestr);
 
-		if($mysgin == $sign) {
+		if ($mysgin == $sign) {
 			return true;
+		} else {
+			return false;
 		}
-		else {
+	}
+
+	static public function sha1Sign($prestr, $key)
+	{
+		$prestr = $prestr . $key;
+		return sha1($prestr);
+	}
+
+	static public function sha1Verify($prestr, $sign, $key)
+	{
+		$prestr = $prestr . $key;
+		$mysgin = sha1($prestr);
+
+		if ($mysgin == $sign) {
+			return true;
+		} else {
 			return false;
 		}
 	}

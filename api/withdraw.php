@@ -16,7 +16,7 @@ try {
     $queryArr = $_POST;
 
     // $queryArr = [
-    //     'pid' => '1001',
+    //     'uid' => '1001',
     //     'out_trade_no' => 'C2022080909522472338',
     //     'notify_url' => 'http://103.44.251.44/notify_custom.php',
     //     'money' => '200',
@@ -24,20 +24,20 @@ try {
     //     'account' => '111111111',
     //     'username' => 'xxxxxxx',
     //     'sign' => 'acc2959966a59154a3f851a920ff538b',
-    //     'sign_type' => 'MD5',
+    //     'sign_type' => 'SHA1',
     // ];
 
     addLog('[提现订单]' . json_encode($queryArr, 320));
 
     $prestr = PayUtils::createLinkstring(PayUtils::argSort(PayUtils::paraFilter($queryArr)));
-    $uid = intval($queryArr['pid'] ?? '');
+    $uid = intval($queryArr['uid'] ?? '');
 
-    if (empty($uid)) exitWithJson(6000, "pid为空");
+    if (empty($uid)) exitWithJson(6000, "uid为空");
 
     $userrow = $DB->getRow("SELECT * FROM `pre_user` WHERE `uid`='{$uid}' LIMIT 1");
     if (!$userrow) exitWithJson(6000, '商户不存在');
 
-    if (!PayUtils::md5Verify($prestr, $queryArr['sign'], $userrow['key'])) exitWithJson(6000, '签名校验失败，请返回重试');
+    if (!PayUtils::sha1Verify($prestr, $queryArr['sign'], $userrow['key'])) exitWithJson(6000, '签名校验失败，请返回重试');
 
     if ($userrow['status'] == 0 || $userrow['withdraw'] == 0) exitWithJson(6000, '商户已封禁，无法提现');
 

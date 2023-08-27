@@ -1276,21 +1276,21 @@ function notifyCustom($order)
 		}
 
 		$param = [
-			'pid' => $order['uid'],
+			'uid' => $order['uid'],
 			'trade_no' => $order['trade_no'],
 			'out_trade_no' => $order['out_trade_no'],
-			'type' => 'charge',
+			'pay_type' => 'charge',
 			'name' => $order['name'],
 			'money' => $order['money'],
 			'param' => $order['param'],
 			'sign' => '',
-			'sign_type' => 'MD5',
+			'sign_type' => 'SHA1',
 			'trade_status' => 'TRADE_SUCCESS',
 			'realmoney' => $order['realmoney'],
 		];
 
 		$prestr = \lib\PayUtils::createLinkstring(\lib\PayUtils::argSort(\lib\PayUtils::paraFilter($param)));
-		$param['sign'] = \lib\PayUtils::md5Sign($prestr, $user['key']);
+		$param['sign'] = \lib\PayUtils::sha1Sign($prestr, $user['key']);
 
 		$content = json_encode($param, 320);
 		$options = [
@@ -1351,7 +1351,7 @@ function notifyCustomWithdraw($order)
 		}
 
 		$param = [
-			'pid' => $order['uid'],
+			'uid' => $order['uid'],
 			'trade_no' => $order['trade_no'],
 			'out_trade_no' => $order['out_trade_no'],
 			'money' => $order['money'],
@@ -1359,12 +1359,12 @@ function notifyCustomWithdraw($order)
 			'account' => $order['account'],
 			'username' => $order['username'],
 			'sign' => '',
-			'sign_type' => 'MD5',
+			'sign_type' => 'SHA1',
 			'trade_status' => $trade_status,
 		];
 
 		$prestr = \lib\PayUtils::createLinkstring(\lib\PayUtils::argSort(\lib\PayUtils::paraFilter($param)));
-		$param['sign'] = \lib\PayUtils::md5Sign($prestr, $user['key']);
+		$param['sign'] = \lib\PayUtils::sha1Sign($prestr, $user['key']);
 
 		$content = json_encode($param, 320);
 		$options = [

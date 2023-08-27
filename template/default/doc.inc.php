@@ -8,7 +8,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
   </h3>
   <p>传输方式：HTTP</p>
   <p>数据格式：JSON</p>
-  <p>签名算法：MD5</p>
+  <p>签名算法：SHA1</p>
   <p>字符编码：UTF-8</p>
 </div>
 <div id="pay0" class="api_block">
@@ -20,7 +20,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
   </p>
   <p>URL地址：<font color="#29389f">http://payapi.hkrainbowpay.com/submit.php</font>
   </p>
-  <p>POST数据：<font color="#29389f">pid={商户ID}&amp;type={支付方式}&amp;out_trade_no={商户订单号}&amp;notify_url={服务器异步通知地址}&amp;name={商品名称}&amp;money={金额}&amp;sign={签名字符串}&amp;sign_type=MD5</font>
+  <p>POST数据：<font color="#29389f">uid={商户ID}&amp;pay_type={支付方式}&amp;out_trade_no={商户订单号}&amp;notify_url={服务器异步通知地址}&amp;name={商品名称}&amp;money={金额}&amp;sign={签名字符串}&amp;sign_type=SHA1</font>
   </p>
   <p>请求参数说明：</p>
   <table class="table table-bordered table-hover">
@@ -37,7 +37,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
     <tbody>
       <tr>
         <td>商户ID</td>
-        <td>pid</td>
+        <td>uid</td>
         <td>是</td>
         <td>Int</td>
         <td>1001</td>
@@ -45,7 +45,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
       </tr>
       <tr>
         <td>支付方式</td>
-        <td>type</td>
+        <td>pay_type</td>
         <td>是</td>
         <td>String</td>
         <td>charge</td>
@@ -104,8 +104,8 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
         <td>sign_type</td>
         <td>是</td>
         <td>String</td>
-        <td>MD5</td>
-        <td>默认为MD5</td>
+        <td>SHA1</td>
+        <td>默认为SHA1</td>
       </tr>
       <tr>
         <td>语言</td>
@@ -139,7 +139,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
     <tbody>
       <tr>
         <td>商户ID</td>
-        <td>pid</td>
+        <td>uid</td>
         <td>是</td>
         <td>Int</td>
         <td>1001</td>
@@ -163,7 +163,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
       </tr>
       <tr>
         <td>支付方式</td>
-        <td>type</td>
+        <td>pay_type</td>
         <td>是</td>
         <td>String</td>
         <td>charge</td>
@@ -222,13 +222,13 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
         <td>sign_type</td>
         <td>是</td>
         <td>String</td>
-        <td>MD5</td>
-        <td>默认为MD5</td>
+        <td>SHA1</td>
+        <td>默认为SHA1</td>
       </tr>
     </tbody>
   </table>
   <p>
-    <font color="#993939">收到异步通知后，需返回 success 以表示服务器接收到了订单通知并成功处理，否则将会以一定的时间间隔（15s/15s/30s/3m/10m/20m/30m/30m/30m/60m/3h/3h/3h/6h/6h - 总计 24h4m）继续通知。</font>
+    <font color="#993939">收到异步通知后，需返回 success 字符串以表示服务器接收到了订单通知并成功处理。</font>
   </p>
 </div>
 <div id="pay2" class="api_block">
@@ -257,7 +257,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
     <tbody>
       <tr>
         <td>商户ID</td>
-        <td>pid</td>
+        <td>uid</td>
         <td>是</td>
         <td>Int</td>
         <td>1001</td>
@@ -304,7 +304,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
         <td>data</td>
         <td>Array</td>
         <td></td>
-        <td>包含字段：<br />pid 商户号<br />trade_no 平台单号<br />out_trade_no 商户单号<br />status 支付状态：SUCCESS（已支付）；NOTPAY（未支付）</td>
+        <td>包含字段：<br />uid 商户号<br />trade_no 平台单号<br />out_trade_no 商户单号<br />status 支付状态：SUCCESS（已支付）；NOTPAY（未支付）</td>
       </tr>
     </tbody>
   </table>
@@ -335,7 +335,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
     <tbody>
       <tr>
         <td>商户ID</td>
-        <td>pid</td>
+        <td>uid</td>
         <td>是</td>
         <td>Int</td>
         <td>1001</td>
@@ -410,8 +410,8 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
         <td>sign_type</td>
         <td>是</td>
         <td>String</td>
-        <td>MD5</td>
-        <td>默认为MD5</td>
+        <td>SHA1</td>
+        <td>默认为SHA1</td>
       </tr>
     </tbody>
   </table>
@@ -465,7 +465,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
     <tbody>
       <tr>
         <td>商户ID</td>
-        <td>pid</td>
+        <td>uid</td>
         <td>是</td>
         <td>Int</td>
         <td>1001</td>
@@ -540,13 +540,13 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
         <td>sign_type</td>
         <td>是</td>
         <td>String</td>
-        <td>MD5</td>
-        <td>默认为MD5</td>
+        <td>SHA1</td>
+        <td>默认为SHA1</td>
       </tr>
     </tbody>
   </table>
   <p>
-    <font color="#993939">收到异步通知后，需返回 success 以表示服务器接收到了订单通知并成功处理，否则将会以一定的时间间隔（15s/15s/30s/3m/10m/20m/30m/30m/30m/60m/3h/3h/3h/6h/6h - 总计 24h4m）继续通知。</font>
+    <font color="#993939">收到异步通知后，需返回 success 字符串以表示服务器接收到了订单通知并成功处理。</font>
   </p>
 </div>
 <div id="pay5" class="api_block">
@@ -575,7 +575,7 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
     <tbody>
       <tr>
         <td>商户ID</td>
-        <td>pid</td>
+        <td>uid</td>
         <td>是</td>
         <td>Int</td>
         <td>1001</td>
@@ -622,19 +622,19 @@ $paytype = $DB->getAll("SELECT * FROM pre_type WHERE status=1 ORDER BY id ASC");
         <td>data</td>
         <td>Array</td>
         <td></td>
-        <td>包含字段：<br />pid 商户号<br />trade_no 平台单号<br />out_trade_no 商户单号<br />status 支付状态：SUCCESS（已支付）；NOTPAY（未支付）；REJECT（驳回）；ENFORCE_REJECT（强制驳回）；ENFORCE_SUCCESS（强制完成）</td>
+        <td>包含字段：<br />uid 商户号<br />trade_no 平台单号<br />out_trade_no 商户单号<br />status 支付状态：SUCCESS（已支付）；NOTPAY（未支付）；REJECT（驳回）；ENFORCE_REJECT（强制驳回）；ENFORCE_SUCCESS（强制完成）</td>
       </tr>
     </tbody>
   </table>
 </div>
 <div id="pay6" class="api_block">
   <h3>
-    MD5签名算法
+    SHA1签名算法
   </h3>
   <p>
     请对参数按照键名进行降序排序（a-z），sign和sign_type 和空值不进行签名！。
     排序后请操作参数生成或拼接一个url请求字符串 例如 <code>a=b&amp;c=d&amp;e=f</code> (Url值不能携带参数！不要进行urlencode)
-    再将拼接好的请求字符串与平台生成的Key进行MD5加密得出sign签名参数 <code>md5 ( a=b&amp;c=d&amp;e=f + KEY )</code> (注意：+ 为各语言的拼接符！不是字符！)，md5为小写
+    再将拼接好的请求字符串与平台生成的Key进行SHA1加密得出sign签名参数 <code>SHA1 ( a=b&amp;c=d&amp;e=f + KEY )</code> (注意：+ 为各语言的拼接符！不是字符！)，SHA1的结果为小写字符串
   </p>
 </div>
 <div id="pay7" class="api_block">

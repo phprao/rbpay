@@ -12,14 +12,14 @@ $t = [
     'username' => 'xxxxxxx',
     'channel_type' => 2,
     'sign' => '',
-    'sign_type' => 'MD5',
+    'sign_type' => 'SHA1',
 ];
 
 use \lib\PayUtils;
 
 $prestr = PayUtils::createLinkstring(PayUtils::argSort(PayUtils::paraFilter($t)));
 $key = "pZZdEdWfw3Mw3x3SHB13XD3732MxShxF";
-$sign = PayUtils::md5Sign($prestr, $key);
+$sign = PayUtils::sha1Sign($prestr, $key);
 
 $t['sign'] = $sign;
 
@@ -85,7 +85,7 @@ $t['sign'] = $sign;
                     account: account,
                     username: username,
                     channel_type: channel_type,
-                    sign_type: "MD5",
+                    sign_type: "SHA1",
                 },
                 dataType: 'json',
                 success: function(ret) {

@@ -5,7 +5,7 @@
  * 
  * body, json
  * 
- * {"pid":"1001","trade_no":"P2022081414340687608","out_trade_no":"C2022081414340238220","type":"charge","name":"VIP年度会员","money":"166.00","param":"","sign":"355188ba76ff2c22b37f407373a04933","sign_type":"MD5","trade_status":"TRADE_SUCCESS"}
+ * {"uid":"1001","trade_no":"P2022081414340687608","out_trade_no":"C2022081414340238220","type":"charge","name":"VIP年度会员","money":"166.00","param":"","sign":"355188ba76ff2c22b37f407373a04933","sign_type":"SHA1","trade_status":"TRADE_SUCCESS"}
  */
 
 require '../includes/common.php';
@@ -30,22 +30,22 @@ if (!isset($queryArr['sign_type']) || empty($queryArr['sign_type'])) {
     exit('error');
 }
 
-if (!isset($queryArr['pid']) || empty($queryArr['pid'])) {
+if (!isset($queryArr['uid']) || empty($queryArr['uid'])) {
     exit('error');
 }
 
-$pid = $queryArr['pid'];
+$uid = $queryArr['uid'];
 
 use \lib\PayUtils;
 
 $prestr = PayUtils::createLinkstring(PayUtils::argSort(PayUtils::paraFilter($queryArr)));
 
-$userrow = $DB->getRow("SELECT * FROM `pre_user` WHERE `uid`='{$pid}' LIMIT 1");
+$userrow = $DB->getRow("SELECT * FROM `pre_user` WHERE `uid`='{$uid}' LIMIT 1");
 if (empty($userrow)) {
     exit('error');
 }
 
-if (!PayUtils::md5Verify($prestr, $queryArr['sign'], $userrow['key'])) {
+if (!PayUtils::sha1Verify($prestr, $queryArr['sign'], $userrow['key'])) {
     addLog('[回调通知SIGN失败]' . $body);
     exit('error');
 }

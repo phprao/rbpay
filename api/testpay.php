@@ -11,7 +11,7 @@ $t = [
     'money' => strval(rand(100, 200)),
     'param' => '',
     'sign' => '',
-    'sign_type' => 'MD5',
+    'sign_type' => 'SHA1',
     'lang' => 'chinese_hongkong',
 ];
 
@@ -19,7 +19,7 @@ use \lib\PayUtils;
 
 $prestr = PayUtils::createLinkstring(PayUtils::argSort(PayUtils::paraFilter($t)));
 $key = "VbarShhUybZb22j6RjfJrhBbJRJsOByf";
-$sign = PayUtils::md5Sign($prestr, $key);
+$sign = PayUtils::sha1Sign($prestr, $key);
 
 $t['sign'] = $sign;
 
@@ -66,7 +66,7 @@ $t['sign'] = $sign;
         var notify_url = <?php echo '"' . $t['notify_url'] . '"'; ?>;
         var lang = <?php echo '"' . $t['lang'] . '"'; ?>;
 
-        var u = "submit.php?pid=" + pid + "&type=charge&out_trade_no=" + out_trade_no + "&notify_url=" + notify_url + "&name=" + name + "&money=" + money + "&param=&sign=" + sign + "&sign_type=MD5&lang=" + lang;
+        var u = "submit.php?pid=" + pid + "&type=charge&out_trade_no=" + out_trade_no + "&notify_url=" + notify_url + "&name=" + name + "&money=" + money + "&param=&sign=" + sign + "&sign_type=SHA1&lang=" + lang;
 
         $(".copy-account").on("click", function() {
             window.location.href = u;
