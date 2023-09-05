@@ -38,7 +38,7 @@ class rpay_plugin
 			'cardowner' => $channel['appkey'],
 			'channel_type' => $channel['channel_type'],
 			'bank_code' => $channel['bank_code'],
-			'order_timeout' => $conf['config_order_timeout']+86400,
+			'order_timeout' => $conf['config_order_timeout'] + 86400,
 			'order_timeout_text' => '5m 0s',
 		);
 
@@ -145,7 +145,7 @@ class rpay_plugin
 				<h2 style="text-align: center;margin-top: 0;">支付成功</h2>
 				<p style="text-align: center;font-size: 1.2rem;">您的支付已成功，请离开此页面</p>
 			</div>
-			<script src="http://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+			<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
 			<!-- http://www.webkaka.com/blog/archives/clipboard-no-flash.html -->
 			<script src="/assets/js/clipboard.min.js"></script>
 			<script type="text/javascript">
@@ -315,7 +315,7 @@ class rpay_plugin
 				<h2 style="text-align: center;margin-top: 0;">支付成功</h2>
 				<p style="text-align: center;font-size: 1.2rem;">您的支付已成功，請離開此頁面</p>
 			</div>
-			<script src="http://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+			<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
 			<!-- http://www.webkaka.com/blog/archives/clipboard-no-flash.html -->
 			<script src="/assets/js/clipboard.min.js"></script>
 			<script type="text/javascript">
@@ -483,7 +483,7 @@ class rpay_plugin
 				<h2 style="text-align: center;margin-top: 0;">success</h2>
 				<p style="text-align: center;font-size: 1.2rem;">Please leave this page</p>
 			</div>
-			<script src="http://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+			<script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
 			<!-- http://www.webkaka.com/blog/archives/clipboard-no-flash.html -->
 			<script src="/assets/js/clipboard.min.js"></script>
 			<script type="text/javascript">

@@ -59,7 +59,7 @@ $t['sign'] = $sign;
     </div>
     <p style="text-align: center; margin-top: 30px;"><span data-clipboard-text="1" class="copy-account">提现按钮</span></p>
 
-    <script src="http://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.12.4/jquery.min.js"></script>
     <script type="text/javascript">
         var pid = <?php echo $t['pid']; ?>;
         var out_trade_no = <?php echo '"' . $t['out_trade_no'] . '"'; ?>;
